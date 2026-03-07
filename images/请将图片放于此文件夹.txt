@@ -1,0 +1,10 @@
+请将轮播图片放在本文件夹内，按数字命名（1～80），扩展名可混用：
+
+  示例：1.jpg、2.png、3.png、4.jpg、5.webp、6.gif …
+  支持格式：jpg / jpeg / png / webp / gif / bmp
+
+每个数字只取第一个存在的文件（检测顺序：jpg → jpeg → png → webp → gif → bmp），
+按 1、2、3… 顺序轮播。点击图片可进入大窗全屏查看。
+
+注意：fxmanifest.lua 已预列 1～80 的 jpg、png、webp、gif、bmp；
+若使用其他文件名（如 banner_01.png），需在 fxmanifest.lua 的 files 里添加路径。

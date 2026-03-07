@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>加载中</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="click-ripples" class="click-ripples" aria-hidden="true"></div>
+    <div id="app">
+        <!-- 左上角服务器 LOGO 放置点（在 config.js 中设置 LOADSCREEN_LOGO_URL） -->
+        <div id="server-logo-wrap" class="server-logo-wrap" aria-hidden="true">
+            <img id="server-logo" class="server-logo" src="" alt="服务器标识">
+        </div>
+        <!-- 轮播层 -->
+        <div id="slides" class="slides"></div>
+
+        <!-- 左右切换热区 -->
+        <button type="button" id="prev" class="nav-btn nav-prev" aria-label="上一张">‹</button>
+        <button type="button" id="next" class="nav-btn nav-next" aria-label="下一张">›</button>
+
+        <!-- 底部信息栏：左侧迷你播放器 + 右侧提示/轮播点/进度条 -->
+        <div class="bottom-bar">
+            <div class="bottom-bar-left">
+                <div class="mini-player">
+                    <audio id="bgm" loop preload="auto" autoplay></audio>
+                    <button type="button" id="player-play" class="player-btn" aria-label="播放/暂停" title="播放/暂停">
+                        <span class="player-icon-play"></span>
+                        <span class="player-icon-pause"></span>
+                    </button>
+                    <div class="player-volume">
+                        <span class="player-volume-icon" aria-hidden="true"></span>
+                        <input type="range" id="player-volume" class="player-volume-range" min="0" max="100" value="10" aria-label="音量">
+                    </div>
+                </div>
+            </div>
+            <div class="bottom-bar-center">
+                <div id="dots" class="dots"></div>
+                <p id="tip" class="tip">加载中…</p>
+                <div class="progress-wrap">
+                    <div id="progress-fill" class="progress-fill"></div>
+                    <span id="progress-text" class="progress-text">0%</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="view-bar">
+            <div id="view-btns" class="view-bar-views" role="group" aria-label="查看方式">
+                <button type="button" class="view-btn view-btn-active" data-view="carousel" aria-label="轮播" title="轮播">⊟</button>
+                <button type="button" class="view-btn" data-view="grid" aria-label="网格" title="网格">▦</button>
+            </div>
+        </div>
+        <!-- 网格缩略图区域（查看=网格时显示） -->
+        <div id="grid-wrap" class="grid-wrap" aria-hidden="true">
+            <div id="grid-inner" class="grid-inner"></div>
+        </div>
+        <!-- 大窗查看 -->
+        <div id="lightbox" class="lightbox" role="dialog" aria-label="大图查看" aria-hidden="true">
+            <div class="lightbox-backdrop" id="lightbox-backdrop" aria-hidden="true"></div>
+            <button type="button" id="lightbox-close" class="lightbox-close" aria-label="关闭">×</button>
+            <button type="button" id="lightbox-prev" class="lightbox-nav lightbox-prev" aria-label="上一张">‹</button>
+            <img id="lightbox-img" class="lightbox-img" src="" alt="">
+            <button type="button" id="lightbox-next" class="lightbox-nav lightbox-next" aria-label="下一张">›</button>
+            <div id="lightbox-counter" class="lightbox-counter"></div>
+        </div>
+    </div>
+    <script src="config.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
