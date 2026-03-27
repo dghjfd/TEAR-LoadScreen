@@ -127,24 +127,32 @@ local function validate_version(client_version, client_hash)
         return parts
     end
 
-    local function version_compare(v1, v2)
-        local p1, p2 = parse_version(v1), parse_version(v2)
-        for i = 1, 3 do
-            if p1[i] > p2[i] then return 1
-            elseif p1[i] < p2[i] then return -1 end
-        end
-        return 0
-    end
-
     local p_client = parse_version(client_version)
     local p_required = parse_version(required)
-    local major_diff = p_client[1] - p_required[1]
 
-    if major_diff < 0 then
-        if math.abs(major_diff) > 1 then
+    local diffs = {
+        major = p_client[1] - p_required[1],
+        minor = p_client[2] - p_required[2],
+        patch = p_client[3] - p_required[3]
+    }
+
+    local function check_diff(diff, name)
+        return math.abs(diff) > 1
+    end
+
+    local forced = check_diff(diffs.major, "major") or
+                   check_diff(diffs.minor, "minor") or
+                   check_diff(diffs.patch, "patch")
+
+    if diffs.major < 0 or diffs.minor < 0 or diffs.patch < 0 then
+        if forced then
+            local diff_desc = ""
+            if diffs.major < -1 then diff_desc = diff_desc .. "主版本" end
+            if diffs.minor < -1 then diff_desc = diff_desc .. "次版本" end
+            if diffs.patch < -1 then diff_desc = diff_desc .. "补丁版本" end
             return false, string.format(
-                "[TEAR-LoadScreen 强制更新] 版本严重过旧! 当前: '%s', 最低要求: '%s'. 大版本相差 %d，已超过允许范围(1)。请立即从 GitHub 下载最新版本。",
-                client_version, required, math.abs(major_diff)
+                "[TEAR-LoadScreen 强制更新] 版本过旧! 当前: '%s', 最低要求: '%s'. 差距超过1个版本，请更新到最新版本。",
+                client_version, required
             )
         else
             return false, string.format(
@@ -152,6 +160,15 @@ local function validate_version(client_version, client_hash)
                 client_version, required
             )
         end
+    end
+
+    local function version_compare(v1, v2)
+        local p1, p2 = parse_version(v1), parse_version(v2)
+        for i = 1, 3 do
+            if p1[i] > p2[i] then return 1
+            elseif p1[i] < p2[i] then return -1 end
+        end
+        return 0
     end
 
     local result = version_compare(client_version, required)
