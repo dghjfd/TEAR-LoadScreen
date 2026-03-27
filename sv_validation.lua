@@ -21,7 +21,9 @@ local function decrypt_data(encrypted, key)
     for i = 1, #encrypted do
         local char = string.byte(encrypted, i)
         local key_char = string.byte(key, (i - 1) % #key + 1)
-        decrypted[i] = string.char(bit32.band(char, 0xFF) ~ bit32.band(key_char, 0xFF))
+        local xor_val = char ~ key_char
+        xor_val = (xor_val >= 0 and xor_val <= 255) and xor_val or (xor_val % 256)
+        decrypted[i] = string.char(xor_val)
     end
     return table.concat(decrypted)
 end
@@ -32,7 +34,9 @@ local function encrypt_data(data, key)
     for i = 1, #data do
         local char = string.byte(data, i)
         local key_char = string.byte(key, (i - 1) % #key + 1)
-        encrypted[i] = string.char(bit32.band(char, 0xFF) ~ bit32.band(key_char, 0xFF))
+        local xor_val = char ~ key_char
+        xor_val = (xor_val >= 0 and xor_val <= 255) and xor_val or (xor_val % 256)
+        encrypted[i] = string.char(xor_val)
     end
     return table.concat(encrypted)
 end
@@ -42,8 +46,9 @@ local function generate_validation_key()
     local hash = GetHashKey(source)
     local key = ""
     for i = 1, 16 do
-        local byte = bit32.band(bit32.rshift(hash, (i - 1) * 4), 0xFF)
-        if byte == 0 then byte = 0x41 end
+        local shifted = math.floor(hash / math.pow(2, (i - 1) * 4))
+        local byte = shifted % 256
+        if byte == 0 then byte = 65 end
         key = key .. string.char(byte)
     end
     return key
