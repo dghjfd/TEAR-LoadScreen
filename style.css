@@ -761,3 +761,35 @@ body.tear-fingerprint {
     content: "PROTECTED-BY-TEAR-LOADSCREEN-VALIDATION-SYSTEM";
     display: none;
 }
+
+/* 樱花特效容器 */
+.sakura-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+    overflow: hidden;
+}
+
+.sakura-petal {
+    position: absolute;
+    background: linear-gradient(135deg, #ffb7c5 0%, #ff69b4 100%);
+    border-radius: 150% 0 150% 0;
+    animation: sakura-fall linear forwards;
+    opacity: 0.8;
+    box-shadow: 0 0 10px rgba(255, 183, 197, 0.5);
+}
+
+@keyframes sakura-fall {
+    0% {
+        opacity: 0.9;
+        transform: translateY(0) rotate(0deg) translateX(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(100vh) rotate(720deg) translateX(100px);
+    }
+}

@@ -721,6 +721,7 @@
                 updateLightboxContent();
             }
         }, { passive: true });
+        
         /* 鼠标点击涟漪效果 */
         (function () {
             var container = document.getElementById('click-ripples');
@@ -739,6 +740,55 @@
                 }, 750);
             }
             document.addEventListener('mousedown', addRipple);
+        })();
+        
+        /* 樱花特效 */
+        (function () {
+            var sakuraContainer = document.getElementById('sakura-container');
+            if (!sakuraContainer) return;
+            
+            function createSakura(x, y) {
+                var petal = document.createElement('div');
+                petal.className = 'sakura-petal';
+                
+                // 随机大小
+                var size = Math.random() * 10 + 8;
+                petal.style.width = size + 'px';
+                petal.style.height = size + 'px';
+                
+                // 设置位置
+                petal.style.left = x + 'px';
+                petal.style.top = y + 'px';
+                
+                // 随机动画时长
+                var duration = Math.random() * 2 + 3;
+                petal.style.animationDuration = duration + 's';
+                
+                // 随机延迟
+                petal.style.animationDelay = (Math.random() * 0.5) + 's';
+                
+                sakuraContainer.appendChild(petal);
+                
+                // 清理
+                setTimeout(function () {
+                    if (petal.parentNode) {
+                        petal.parentNode.removeChild(petal);
+                    }
+                }, (duration + 1) * 1000);
+            }
+            
+            // 点击时生成樱花
+            document.addEventListener('click', function (e) {
+                if (e.target.closest('button') || e.target.closest('input')) return;
+                
+                // 生成 3-5 片樱花
+                var count = Math.floor(Math.random() * 3) + 3;
+                for (var i = 0; i < count; i++) {
+                    var offsetX = (Math.random() - 0.5) * 60;
+                    var offsetY = (Math.random() - 0.5) * 60;
+                    createSakura(e.clientX + offsetX, e.clientY + offsetY);
+                }
+            });
         })();
         if (typeof window.onmessage !== 'undefined') {
             window.addEventListener('message', onMessage);
@@ -839,7 +889,9 @@
         
         // 检查是否启用视频模式，决定是否显示模式切换按钮
         var videoEnabled = typeof window.LOADSCREEN_USE_VIDEO !== 'undefined' && window.LOADSCREEN_USE_VIDEO;
-        var hasImages = typeof window.LOADSCREEN_IMAGE_NAMES !== 'undefined' || typeof window.LOADSCREEN_IMAGE_LIST_URL !== 'undefined';
+        var hasImages = typeof window.LOADSCREEN_IMAGE_NAMES !== 'undefined' || 
+                       typeof window.LOADSCREEN_IMAGE_LIST_URL !== 'undefined' || 
+                       imageList.length > 0;
         
         $modeBtns = document.getElementById('mode-btns');
         if ($modeBtns && videoEnabled && hasImages) {
@@ -848,7 +900,7 @@
             console.log('[TEAR-LoadScreen] 显示模式切换按钮已启用');
         } else if ($modeBtns) {
             $modeBtns.style.display = 'none';
-            console.log('[TEAR-LoadScreen] 显示模式切换按钮已隐藏');
+            console.log('[TEAR-LoadScreen] 显示模式切换按钮已隐藏（只有视频或只有图片）');
         }
         
         updateProgress(0);
