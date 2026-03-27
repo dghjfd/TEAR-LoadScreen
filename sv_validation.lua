@@ -140,25 +140,50 @@ end
 
 --[[
     验证版本号
+    如果大版本差值超过1，则强制更新
 ]]
 local function validate_version(client_version, client_hash)
     local required = VALIDATION.REQUIRED_VERSION
-    local function version_compare(v1, v2)
-        local function parse_version(v)
-            local parts = {}
-            for part in string.gmatch(v, "[^.]+") do
-                table.insert(parts, tonumber(part) or 0)
-            end
-            while #parts < 3 do table.insert(parts, 0) end
-            return parts
-        end
 
+    local function parse_version(v)
+        local parts = {}
+        for part in string.gmatch(v, "[^.]+") do
+            table.insert(parts, tonumber(part) or 0)
+        end
+        while #parts < 3 do table.insert(parts, 0) end
+        return parts
+    end
+
+    local function version_compare(v1, v2)
         local p1, p2 = parse_version(v1), parse_version(v2)
         for i = 1, 3 do
             if p1[i] > p2[i] then return 1
             elseif p1[i] < p2[i] then return -1 end
         end
         return 0
+    end
+
+    local p_client = parse_version(client_version)
+    local p_required = parse_version(required)
+    local major_diff = p_client[1] - p_required[1]
+
+    if major_diff < 0 then
+        if math.abs(major_diff) > 1 then
+            return false, string.format(
+                "[TEAR-LoadScreen 强制更新] 版本严重过旧! " ..
+                "当前: '%s', 最低要求: '%s'. " ..
+                "大版本相差 %d，已超过允许范围(1)。" ..
+                "请立即从 GitHub 下载最新版本，否则资源将无法使用。",
+                client_version, required, math.abs(major_diff)
+            )
+        else
+            return false, string.format(
+                "[TEAR-LoadScreen 验证错误] 版本过旧! " ..
+                "当前: '%s', 最低要求: '%s'. " ..
+                "请从 GitHub 更新到最新版本。",
+                client_version, required
+            )
+        end
     end
 
     local result = version_compare(client_version, required)
