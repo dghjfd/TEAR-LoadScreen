@@ -188,6 +188,15 @@ AddEventHandler("TEAR-LoadScreen:ValidationResult", function(passed, data)
     if passed then
         log_info("服务端验证通过")
         validation_state.passed = true
+        -- 显示疑似修改信息（如果有）
+        if data and data.suspicious and #data.suspicious > 0 then
+            log_error("========================================")
+            log_error("检测到疑似修改的文件:")
+            for _, info in ipairs(data.suspicious) do
+                log_error("  - " .. info)
+            end
+            log_error("========================================")
+        end
     else
         log_error("服务端验证失败")
         if data and data.errors then
@@ -195,6 +204,13 @@ AddEventHandler("TEAR-LoadScreen:ValidationResult", function(passed, data)
                 log_error(err)
             end
             show_validation_error(data.errors)
+        end
+        -- 显示疑似修改信息（如果有）
+        if data and data.suspicious and #data.suspicious > 0 then
+            log_error("疑似修改的文件:")
+            for _, info in ipairs(data.suspicious) do
+                log_error("  - " .. info)
+            end
         end
         validation_state.passed = false
     end

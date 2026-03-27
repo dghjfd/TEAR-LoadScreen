@@ -24,6 +24,7 @@
     const ValidationState = {
         passed: false,
         errors: [],
+        suspicious: [],
         initialized: false,
         blocked: false,
         encryptionKey: null
@@ -100,6 +101,21 @@
     function logInfo(msg) {
         console.info('[TEAR-LoadScreen JS 验证] ' + msg);
     }
+
+    // 监听服务端验证结果事件
+    window.addEventListener('message', function(event) {
+        if (event.data && event.data.event === 'TEAR_VALIDATION_RESULT') {
+            const { passed, suspicious } = event.data;
+            if (passed && suspicious && suspicious.length > 0) {
+                logError('========================================');
+                logError('检测到疑似修改的文件:');
+                suspicious.forEach(function(info) {
+                    logError('  - ' + info);
+                });
+                logError('========================================');
+            }
+        }
+    });
 
     /**
      * 解析版本号字符串
