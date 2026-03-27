@@ -4,7 +4,7 @@
 
 # TEA-LoadScreen — 图片/视频轮播加载屏
 
-[![Version](https://img.shields.io/badge/version-2.1.3-blue.svg)](fxmanifest.lua)
+[![Version](https://img.shields.io/badge/version-2.1.4-blue.svg)](fxmanifest.lua)
 [![License](https://img.shields.io/badge/license-GPL--3.0-green.svg)](LICENSE)
 [![Game](https://img.shields.io/badge/game-FiveM-orange.svg)](https://fivem.net/)
 
@@ -202,4 +202,4 @@ setr sv_showBusySpinnerOnLoadingScreen false
 
 ---
 
-**版本：2.1.3** | **作者：TEA**
+**版本：2.1.4** | **作者：TEA**

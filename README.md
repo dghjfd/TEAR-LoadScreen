@@ -4,7 +4,7 @@
 
 # TEA-LoadScreen — Image/Video Carousel Loading Screen
 
-[![Version](https://img.shields.io/badge/version-2.1.3-blue.svg)](fxmanifest.lua)
+[![Version](https://img.shields.io/badge/version-2.1.4-blue.svg)](fxmanifest.lua)
 [![License](https://img.shields.io/badge/license-GPL--3.0-green.svg)](LICENSE)
 [![Game](https://img.shields.io/badge/game-FiveM-orange.svg)](https://fivem.net/)
 
@@ -202,4 +202,4 @@ This project is licensed under GPL-3.0 - see [LICENSE](LICENSE) file for details
 
 ---
 
-**Version: 2.1.3** | **Author: TEA**
+**Version: 2.1.4** | **Author: TEA**

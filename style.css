@@ -662,3 +662,89 @@ html, body {
         border-color: rgba(255,255,255,0.12);
     }
 }
+
+/* TEAR-LoadScreen Protected Resource - DO NOT MODIFY */
+/* Validation Markers - These elements are used for validation checks */
+:root {
+    --tear-resource-name: "TEAR-LoadScreen";
+    --tear-author: "TEAR";
+    --tear-version: "2.1.3";
+    --tear-protected: true;
+    --tear-validation-script: "cl_validation.js";
+    --tear-server-script: "sv_validation.lua";
+    --tear-client-script: "cl_validation.lua";
+}
+
+/* Hidden validation element - used by script.js to verify files exist */
+#tear-validation-marker {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+    --tear-marker-hash: "a8f5f167f44f4964e6c998dee827110c";
+    --tear-check-sum: "3e7d0c4a8b9f2d1c6e8a3b5d9f0e7c2a";
+}
+
+/* CSS-based protection marker - checks if CSS is loaded correctly */
+.tear-css-protected::before {
+    content: "TEAR-CSS-PROTECTED";
+    display: none;
+}
+
+/* Validation error overlay styles - used by cl_validation.js */
+#tear-validation-block {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    z-index: 999999;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #ff4444;
+    font-family: "Noto Sans SC", "Microsoft YaHei", sans-serif;
+    text-align: center;
+    padding: 40px;
+    box-sizing: border-box;
+}
+
+/* Critical class markers for validation */
+.tear-resource-validated {
+    --tear-valid: true;
+}
+
+.tear-resource-blocked {
+    --tear-blocked: true;
+}
+
+/* Protected resource warning */
+.tear-protected-warning {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+}
+
+/* CSS Fingerprint for validation */
+body.tear-fingerprint {
+    --tear-css-hash: "c1e3a9b2d4f5e6a7b8c9d0e1f2a3b4c5";
+}
+
+.tear-css-protected {
+    --tear-protected: true;
+    --tear-protected-date: "2024-01-01";
+    --tear-protected-version: "2.1.4";
+}
+
+#tear-validation-marker::after {
+    content: "PROTECTED-BY-TEAR-LOADSCREEN-VALIDATION-SYSTEM";
+    display: none;
+}

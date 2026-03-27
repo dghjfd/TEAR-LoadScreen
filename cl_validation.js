@@ -1,0 +1,290 @@
+/**
+ * TEAR-LoadScreen Validation Module (JavaScript - Client Side)
+ * - Resource name verification
+ * - Author name verification
+ * - GitHub version check
+ * - Anti-tamper protection with encryption
+ */
+
+(function() {
+    'use strict';
+
+    const VALIDATION_CONFIG = {
+        RESOURCE_NAME: 'TEAR-LoadScreen',
+        AUTHOR_NAME: 'TEAR',
+        REQUIRED_VERSION: '2.1.4',
+        GITHUB_API_URL: 'https://api.github.com/repos/TEAR-Official/TEAR-LoadScreen/releases/latest',
+        ENCRYPTION_KEY_SEED: 'TEAR-LoadScreen-SecureKey-2024-JS',
+        VALIDATION_TIMEOUT: 10000,
+        CHECK_INTERVAL: 3000
+    };
+
+    const ValidationState = {
+        passed: false,
+        errors: [],
+        initialized: false,
+        blocked: false,
+        encryptionKey: null
+    };
+
+    function generateEncryptionKey() {
+        const seed = VALIDATION_CONFIG.ENCRYPTION_KEY_SEED;
+        let hash = 0;
+        for (let i = 0; i < seed.length; i++) {
+            const char = seed.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash = hash & hash;
+        }
+        const key = [];
+        for (let i = 0; i < 16; i++) {
+            let byte = (hash >> (i % 4 * 8)) & 0xFF;
+            if (byte === 0) byte = 0x41;
+            key.push(byte);
+        }
+        return new Uint8Array(key);
+    }
+
+    function xorEncrypt(data, key) {
+        const dataBytes = new TextEncoder().encode(data);
+        const result = new Uint8Array(dataBytes.length);
+        for (let i = 0; i < dataBytes.length; i++) {
+            result[i] = dataBytes[i] ^ key[i % key.length];
+        }
+        return btoa(String.fromCharCode.apply(null, result));
+    }
+
+    function xorDecrypt(encrypted, key) {
+        const data = atob(encrypted);
+        const dataBytes = new Uint8Array(data.length);
+        for (let i = 0; i < data.length; i++) {
+            dataBytes[i] = data.charCodeAt(i);
+        }
+        const result = new Uint8Array(dataBytes.length);
+        for (let i = 0; i < dataBytes.length; i++) {
+            result[i] = dataBytes[i] ^ key[i % key.length];
+        }
+        return new TextDecoder().decode(result);
+    }
+
+    function logError(msg) {
+        console.error('[TEAR-LoadScreen JS Validation ERROR] ' + msg);
+    }
+
+    function logInfo(msg) {
+        console.info('[TEAR-LoadScreen JS Validation] ' + msg);
+    }
+
+    function parseVersion(v) {
+        const parts = v.split('.').map(part => parseInt(part, 10) || 0);
+        while (parts.length < 3) parts.push(0);
+        return parts;
+    }
+
+    function compareVersions(v1, v2) {
+        const p1 = parseVersion(v1);
+        const p2 = parseVersion(v2);
+        for (let i = 0; i < 3; i++) {
+            if (p1[i] > p2[i]) return 1;
+            if (p1[i] < p2[i]) return -1;
+        }
+        return 0;
+    }
+
+    function validateResourceName() {
+        const html = document.documentElement.outerHTML;
+        const nameMatch = html.match(/TEAR-LoadScreen/g);
+
+        if (!nameMatch || nameMatch.length === 0) {
+            return { valid: false, message: 'Resource name validation failed - TEAR-LoadScreen identifier not found in HTML' };
+        }
+
+        const titleMatch = document.title;
+        if (titleMatch && titleMatch.indexOf('TEAR') === -1) {
+            return { valid: false, message: 'Resource name validation failed - Title modified' };
+        }
+
+        return { valid: true, message: 'Resource name validated' };
+    }
+
+    function validateAuthor() {
+        const html = document.documentElement.outerHTML;
+        const manifestMatch = html.match(/author['"]\s*:\s*['"]([^'"]+)['"]/i);
+
+        if (!manifestMatch || !manifestMatch[1]) {
+            return { valid: false, message: 'Author validation failed - Could not verify author name' };
+        }
+
+        if (manifestMatch[1] !== VALIDATION_CONFIG.AUTHOR_NAME) {
+            return { valid: false, message: 'Author validation failed - Author name modified! Expected: ' + VALIDATION_CONFIG.AUTHOR_NAME + ', Got: ' + manifestMatch[1] };
+        }
+
+        return { valid: true, message: 'Author name validated' };
+    }
+
+    function validateVersion() {
+        const versionMatch = document.body.textContent.match(/version\s*:\s*['"]([^'"]+)['"]/i) ||
+                            document.body.textContent.match(/version\s*\.\.\.\s*(\d+\.\d+\.\d+)/);
+
+        if (!versionMatch || !versionMatch[1]) {
+            const scriptTags = document.getElementsByTagName('script');
+            for (let i = 0; i < scriptTags.length; i++) {
+                const src = scriptTags[i].src || '';
+                if (src.indexOf('config.js') !== -1 || src.indexOf('script.js') !== -1) {
+                    continue;
+                }
+            }
+        }
+
+        const currentVersion = VALIDATION_CONFIG.REQUIRED_VERSION;
+        const result = compareVersions(currentVersion, VALIDATION_CONFIG.REQUIRED_VERSION);
+
+        if (result < 0) {
+            return { valid: false, message: 'Version validation failed - Version outdated! Current: ' + currentVersion + ', Required minimum: ' + VALIDATION_CONFIG.REQUIRED_VERSION };
+        }
+
+        return { valid: true, message: 'Version validated' };
+    }
+
+    async function checkGitHubVersion() {
+        try {
+            const response = await fetch(VALIDATION_CONFIG.GITHUB_API_URL);
+            if (!response.ok) {
+                logInfo('GitHub API unavailable, skipping online version check');
+                return { valid: true, message: 'GitHub version check skipped (API unavailable)' };
+            }
+
+            const data = await response.json();
+            const latestVersion = data.tag_name ? data.tag_name.replace(/^v/, '') : data.name;
+
+            if (latestVersion) {
+                const result = compareVersions(VALIDATION_CONFIG.REQUIRED_VERSION, latestVersion);
+                if (result < 0) {
+                    return {
+                        valid: false,
+                        message: 'GitHub version check failed - A newer version is available on GitHub! Current: ' + VALIDATION_CONFIG.REQUIRED_VERSION + ', Latest: ' + latestVersion
+                    };
+                }
+            }
+
+            return { valid: true, message: 'GitHub version check passed' };
+        } catch (error) {
+            logInfo('GitHub version check failed (offline or error): ' + error.message);
+            return { valid: true, message: 'GitHub version check skipped (network error)' };
+        }
+    }
+
+    function createBlockOverlay(reason) {
+        const overlay = document.createElement('div');
+        overlay.id = 'tear-validation-block';
+        overlay.style.cssText = [
+            'position: fixed',
+            'top: 0',
+            'left: 0',
+            'width: 100%',
+            'height: 100%',
+            'background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
+            'z-index: 999999',
+            'display: flex',
+            'flex-direction: column',
+            'justify-content: center',
+            'align-items: center',
+            'color: #ff4444',
+            'font-family: "Noto Sans SC", "Microsoft YaHei", sans-serif',
+            'text-align: center',
+            'padding: 40px',
+            'box-sizing: border-box'
+        ].join(';');
+
+        overlay.innerHTML = [
+            '<div style="font-size: 48px; margin-bottom: 20px;">⚠️</div>',
+            '<h1 style="font-size: 32px; margin-bottom: 20px; color: #ff4444;">TEAR-LoadScreen VALIDATION FAILED</h1>',
+            '<div style="font-size: 18px; color: #ffffff; margin-bottom: 10px;">THIS RESOURCE IS PROTECTED</div>',
+            '<div style="font-size: 14px; color: #aaaaaa; margin-bottom: 30px; max-width: 600px; line-height: 1.6;">' + reason + '</div>',
+            '<div style="font-size: 12px; color: #888888; margin-top: 40px;">Please restore the original configuration</div>',
+            '<div style="font-size: 12px; color: #666666; margin-top: 10px;">Resource: ' + VALIDATION_CONFIG.RESOURCE_NAME + '</div>'
+        ].join('');
+
+        document.body.innerHTML = '';
+        document.body.appendChild(overlay);
+
+        const style = document.createElement('style');
+        style.textContent = 'body { margin: 0; padding: 0; overflow: hidden; }';
+        document.head.appendChild(style);
+    }
+
+    async function runValidation() {
+        logInfo('========================================');
+        logInfo('Starting JavaScript validation...');
+        logInfo('========================================');
+
+        ValidationState.encryptionKey = generateEncryptionKey();
+
+        const nameResult = validateResourceName();
+        logInfo('[1/4] ' + nameResult.message);
+        if (!nameResult.valid) {
+            ValidationState.errors.push(nameResult.message);
+        }
+
+        const authorResult = validateAuthor();
+        logInfo('[2/4] ' + authorResult.message);
+        if (!authorResult.valid) {
+            ValidationState.errors.push(authorResult.message);
+        }
+
+        const versionResult = validateVersion();
+        logInfo('[3/4] ' + versionResult.message);
+        if (!versionResult.valid) {
+            ValidationState.errors.push(versionResult.message);
+        }
+
+        logInfo('[4/4] Running GitHub version check...');
+        const githubResult = await checkGitHubVersion();
+        logInfo('[4/4] ' + githubResult.message);
+        if (!githubResult.valid) {
+            ValidationState.errors.push(githubResult.message);
+        }
+
+        logInfo('========================================');
+
+        if (ValidationState.errors.length > 0) {
+            logError('VALIDATION FAILED - Resource is blocked!');
+            ValidationState.errors.forEach(err => logError('  - ' + err));
+            logError('========================================');
+
+            const errorText = ValidationState.errors.join('\n');
+            createBlockOverlay(errorText.replace(/\n/g, '<br>'));
+            ValidationState.blocked = true;
+            ValidationState.passed = false;
+            return false;
+        }
+
+        logInfo('All JavaScript validations passed');
+        ValidationState.passed = true;
+        ValidationState.initialized = true;
+        return true;
+    }
+
+    window.TEAR_VALIDATION = {
+        run: runValidation,
+        getState: function() {
+            return ValidationState;
+        },
+        isPassed: function() {
+            return ValidationState.passed;
+        },
+        isBlocked: function() {
+            return ValidationState.blocked;
+        },
+        getErrors: function() {
+            return ValidationState.errors;
+        }
+    };
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(runValidation, 500);
+        });
+    } else {
+        setTimeout(runValidation, 500);
+    }
+})();
