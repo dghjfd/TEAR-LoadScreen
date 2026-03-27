@@ -12,7 +12,7 @@
     const VALIDATION_CONFIG = {
         RESOURCE_NAME: 'TEAR-LoadScreen',
         AUTHOR_NAME: 'TEAR',
-        REQUIRED_VERSION: '2.1.6',
+        REQUIRED_VERSION: '2.2.3',
         GITHUB_API_URL: 'https://api.github.com/repos/TEAR-Official/TEAR-LoadScreen/releases/latest',
         ENCRYPTION_KEY_SEED: 'TEAR-LoadScreen-SecureKey-2024-JS',
         VALIDATION_TIMEOUT: 10000,
@@ -180,20 +180,48 @@
 
         ValidationState.encryptionKey = generateEncryptionKey();
 
+        const errors = [];
+
         const nameResult = validateResourceName();
         logInfo('[1/4] ' + nameResult.message);
+        if (!nameResult.valid) {
+            errors.push(nameResult.message);
+        }
 
         const authorResult = validateAuthor();
         logInfo('[2/4] ' + authorResult.message);
+        if (!authorResult.valid) {
+            errors.push(authorResult.message);
+        }
 
         const versionResult = validateVersion();
         logInfo('[3/4] ' + versionResult.message);
+        if (!versionResult.valid) {
+            errors.push(versionResult.message);
+        }
 
         logInfo('[4/4] GitHub 版本检查...');
         const githubResult = await checkGitHubVersion();
         logInfo('[4/4] ' + githubResult.message);
+        if (!githubResult.valid) {
+            errors.push(githubResult.message);
+        }
 
         logInfo('========================================');
+
+        if (errors.length > 0) {
+            logInfo('验证失败！错误：');
+            errors.forEach(function(err) {
+                logError('  - ' + err);
+            });
+            ValidationState.passed = false;
+            ValidationState.errors = errors;
+            ValidationState.blocked = true;
+            
+            const errorReason = errors.join('<br>');
+            createBlockOverlay(errorReason);
+            return false;
+        }
 
         logInfo('所有验证通过');
         ValidationState.passed = true;
