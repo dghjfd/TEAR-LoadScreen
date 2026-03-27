@@ -586,6 +586,7 @@
             }, { once: true });
         }
         
+        // 播放器控制
         if ($playBtn) {
             $playBtn.addEventListener('click', function () {
                 if (!bgmEnabled && !useVideoAudio) return;
@@ -608,15 +609,32 @@
                 }
             });
             
+            // 根据音频源类型设置初始状态
             if (useVideoAudio) {
+                // 使用视频音频时，确保播放器按钮可见且可用
+                $playBtn.style.display = '';
+                $playBtn.style.opacity = '1';
+                $playBtn.style.pointerEvents = 'auto';
                 if ($slideVideo && !$slideVideo.muted) {
                     $playBtn.classList.add('playing');
                 }
+                console.log('[TEAR-LoadScreen] 播放器控制已启用（视频音频模式）');
             } else if (bgmEnabled) {
+                // 使用外部音频时
+                $playBtn.style.display = '';
+                $playBtn.style.opacity = '1';
+                $playBtn.style.pointerEvents = 'auto';
                 if ($bgm) {
                     $bgm.addEventListener('play', function () { $playBtn.classList.add('playing'); });
                     $bgm.addEventListener('pause', function () { $playBtn.classList.remove('playing'); });
                 }
+                console.log('[TEAR-LoadScreen] 播放器控制已启用（外部音频模式）');
+            } else {
+                // 禁用音频时隐藏播放器按钮
+                $playBtn.style.display = 'none';
+                $playBtn.style.opacity = '0';
+                $playBtn.style.pointerEvents = 'none';
+                console.log('[TEAR-LoadScreen] 播放器控制已禁用');
             }
         }
         
@@ -635,8 +653,23 @@
             if (useVideoAudio && $slideVideo) {
                 $slideVideo.volume = initialVolume;
                 $volumeRange.disabled = false;
+                $volumeRange.style.display = '';
+                $volumeRange.style.opacity = '1';
+                $volumeRange.style.pointerEvents = 'auto';
+                console.log('[TEAR-LoadScreen] 音量控制已启用（视频音频模式）');
             } else if (bgmEnabled && $bgm) {
                 $bgm.volume = initialVolume;
+                $volumeRange.disabled = false;
+                $volumeRange.style.display = '';
+                $volumeRange.style.opacity = '1';
+                $volumeRange.style.pointerEvents = 'auto';
+                console.log('[TEAR-LoadScreen] 音量控制已启用（外部音频模式）');
+            } else {
+                $volumeRange.disabled = true;
+                $volumeRange.style.display = 'none';
+                $volumeRange.style.opacity = '0';
+                $volumeRange.style.pointerEvents = 'none';
+                console.log('[TEAR-LoadScreen] 音量控制已禁用');
             }
         }
         
