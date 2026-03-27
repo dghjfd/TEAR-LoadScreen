@@ -9,7 +9,7 @@
 
 local VALIDATION = {
     RESOURCE_NAME = "TEAR-LoadScreen",
-    AUTHOR_NAME = "TEAR",
+    AUTHOR_NAME = "TEARLESSVVOID",
     GITHUB_REPO = "https://api.github.com/repos/TEAR-Official/TEAR-LoadScreen/releases/latest",
     GITHUB_API = "https://api.github.com/repos/TEAR-Official/TEAR-LoadScreen",
     REQUIRED_VERSION = "2.2.3",

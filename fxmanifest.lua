@@ -13,7 +13,7 @@
 fx_version 'cerulean'
 game 'gta5'
 
-author 'TEAR'
+author 'TEARLESSVVOID'
 description 'FiveM loadscreen: image carousel with lightbox viewing [PROTECTED]'
 version '2.2.3'
 
