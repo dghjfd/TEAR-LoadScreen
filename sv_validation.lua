@@ -48,9 +48,7 @@ local function encrypt_data(data, key)
     for i = 1, #data do
         local char = string.byte(data, i)
         local key_char = string.byte(key, (i - 1) % #key + 1)
-        local xor_val = char ~ key_char
-        if xor_val < 0 then xor_val = xor_val + 256 end
-        if xor_val > 255 then xor_val = xor_val % 256 end
+        local xor_val = bit.bxor(char, key_char)
         encrypted[i] = string.char(xor_val)
     end
     return table.concat(encrypted)
