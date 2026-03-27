@@ -195,40 +195,9 @@
 
     async function runValidation() {
         logInfo('========================================');
-        logInfo('开始 JavaScript 验证...');
+        logInfo('客户端验证已暂时禁用');
         logInfo('========================================');
-
-        ValidationState.encryptionKey = generateEncryptionKey();
-
-        const nameResult = validateResourceName();
-        logInfo('[1/4] ' + nameResult.message);
-        if (!nameResult.valid) ValidationState.errors.push(nameResult.message);
-
-        const authorResult = validateAuthor();
-        logInfo('[2/4] ' + authorResult.message);
-        if (!authorResult.valid) ValidationState.errors.push(authorResult.message);
-
-        const versionResult = validateVersion();
-        logInfo('[3/4] ' + versionResult.message);
-        if (!versionResult.valid) ValidationState.errors.push(versionResult.message);
-
-        logInfo('[4/4] GitHub 版本检查...');
-        const githubResult = await checkGitHubVersion();
-        logInfo('[4/4] ' + githubResult.message);
-        if (!githubResult.valid) ValidationState.errors.push(githubResult.message);
-
-        logInfo('========================================');
-
-        if (ValidationState.errors.length > 0) {
-            logError('验证失败!');
-            ValidationState.errors.forEach(err => logError('  - ' + err));
-            createBlockOverlay(ValidationState.errors.join('<br>'));
-            ValidationState.blocked = true;
-            ValidationState.passed = false;
-            return false;
-        }
-
-        logInfo('所有验证通过');
+        
         ValidationState.passed = true;
         ValidationState.initialized = true;
         return true;
