@@ -25,7 +25,7 @@ window.LOADSCREEN_LOGO_URL = 'images/logo.png';
  * Method 2: Set the array below to "no suffix" filenames, auto-detects png/jpg/jpeg/webp/gif/bmp, e.g., ['logo','bg','intro']
  */
 // window.LOADSCREEN_IMAGE_LIST_URL = 'images/list.txt';
-// window.LOADSCREEN_IMAGE_NAMES = ['logo', 'bg', 'intro'];
+window.LOADSCREEN_IMAGE_NAMES = ['bg1', 'bg2', 'bg3'];
 
 /** Whether to enable background music: true=enable, false=disable (quick toggle) */
 window.LOADSCREEN_BGM_ENABLED = false;
@@ -41,7 +41,7 @@ window.LOADSCREEN_BGM_SOURCE = 1;
 window.LOADSCREEN_BGM_LOCAL_URL = 'audio/bgm.mp3';
 
 /** 外部链接音频（仅在 LOADSCREEN_BGM_SOURCE = 3 时生效） */
-window.LOADSCREEN_BGM_URL = 'http://music.163.com/song/media/outer/url?id=2756582166.mp3';
+window.LOADSCREEN_BGM_URL = '';
 
 /** 默认音量（0-100）：设置初始音量大小 */
 window.LOADSCREEN_DEFAULT_VOLUME = 50;

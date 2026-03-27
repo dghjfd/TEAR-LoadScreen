@@ -960,17 +960,18 @@
         
         // 检查是否启用视频模式，决定是否显示模式切换按钮
         var videoEnabled = typeof window.LOADSCREEN_USE_VIDEO !== 'undefined' && window.LOADSCREEN_USE_VIDEO;
-        var hasImages = typeof window.LOADSCREEN_IMAGE_NAMES !== 'undefined' || 
-                       typeof window.LOADSCREEN_IMAGE_LIST_URL !== 'undefined';
+        var hasImagesConfig = typeof window.LOADSCREEN_IMAGE_NAMES !== 'undefined' || 
+                             typeof window.LOADSCREEN_IMAGE_LIST_URL !== 'undefined';
         
         $modeBtns = document.getElementById('mode-btns');
-        if ($modeBtns && videoEnabled && hasImages) {
+        // 只要有视频就显示按钮，不管有没有图片配置
+        if ($modeBtns && videoEnabled) {
             $modeBtns.style.display = 'flex';
             displayMode = 'video';
-            console.log('[TEAR-LoadScreen] 显示模式切换按钮已启用（配置检测）');
+            console.log('[TEAR-LoadScreen] 显示模式切换按钮已启用（视频模式）');
         } else if ($modeBtns) {
             $modeBtns.style.display = 'none';
-            console.log('[TEAR-LoadScreen] 显示模式切换按钮已隐藏（配置检测）');
+            console.log('[TEAR-LoadScreen] 显示模式切换按钮已隐藏');
         }
         
         updateProgress(0);
@@ -990,6 +991,9 @@
             if ($modeBtns && videoEnabled && list.length > 0) {
                 $modeBtns.style.display = 'flex';
                 console.log('[TEAR-LoadScreen] 显示模式切换按钮已启用（图片加载完成）');
+            } else if ($modeBtns && list.length === 0 && !hasImagesConfig) {
+                // 如果没有图片配置，保持按钮显示（只有视频模式）
+                console.log('[TEAR-LoadScreen] 仅视频模式，按钮保持显示');
             } else if ($modeBtns && list.length === 0) {
                 $modeBtns.style.display = 'none';
                 console.log('[TEAR-LoadScreen] 显示模式切换按钮已隐藏（无图片）');
@@ -1003,8 +1007,10 @@
             console.error('[TEAR-LoadScreen] 图片加载失败:', err);
             imageList = [];
             
-            // 图片加载失败后隐藏按钮
-            if ($modeBtns) {
+            // 图片加载失败后，如果有视频仍然显示按钮
+            if ($modeBtns && videoEnabled) {
+                console.log('[TEAR-LoadScreen] 图片加载失败，但视频模式按钮保持显示');
+            } else if ($modeBtns) {
                 $modeBtns.style.display = 'none';
                 console.log('[TEAR-LoadScreen] 显示模式切换按钮已隐藏（加载失败）');
             }
