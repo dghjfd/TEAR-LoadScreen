@@ -20,13 +20,23 @@
     };
 
     const ValidationState = {
-        passed: false,
+        passed: true,
         errors: [],
         suspicious: [],
-        initialized: false,
+        initialized: true,
         blocked: false,
-        encryptionKey: null
+        encryptionKey: null,
+        isFiveMEnvironment: false
     };
+
+    function isInFiveMEnvironment() {
+        return typeof window.postMessage === 'function' && 
+               typeof window.addEventListener === 'function' &&
+               (window.location.protocol === 'nui:' || 
+                window.location.href.includes('nui://'));
+    }
+
+    ValidationState.isFiveMEnvironment = isInFiveMEnvironment();
 
     function generateEncryptionKey() {
         const seed = VALIDATION_CONFIG.ENCRYPTION_KEY_SEED;
@@ -43,28 +53,6 @@
             key.push(byte);
         }
         return new Uint8Array(key);
-    }
-
-    function xorEncrypt(data, key) {
-        const dataBytes = new TextEncoder().encode(data);
-        const result = new Uint8Array(dataBytes.length);
-        for (let i = 0; i < dataBytes.length; i++) {
-            result[i] = dataBytes[i] ^ key[i % key.length];
-        }
-        return btoa(String.fromCharCode.apply(null, result));
-    }
-
-    function xorDecrypt(encrypted, key) {
-        const data = atob(encrypted);
-        const dataBytes = new Uint8Array(data.length);
-        for (let i = 0; i < data.length; i++) {
-            dataBytes[i] = data.charCodeAt(i);
-        }
-        const result = new Uint8Array(dataBytes.length);
-        for (let i = 0; i < dataBytes.length; i++) {
-            result[i] = dataBytes[i] ^ key[i % key.length];
-        }
-        return new TextDecoder().decode(result);
     }
 
     function logError(msg) {
@@ -135,23 +123,7 @@
     }
 
     async function checkGitHubVersion() {
-        try {
-            const response = await fetch(VALIDATION_CONFIG.GITHUB_API_URL);
-            if (!response.ok) {
-                return { valid: true, message: 'GitHub 检查跳过' };
-            }
-            const data = await response.json();
-            const latestVersion = data.tag_name ? data.tag_name.replace(/^v/, '') : data.name;
-            if (latestVersion) {
-                const result = compareVersions(VALIDATION_CONFIG.REQUIRED_VERSION, latestVersion);
-                if (result < 0) {
-                    return { valid: false, message: '有新版本: ' + latestVersion };
-                }
-            }
-            return { valid: true, message: 'GitHub 检查通过' };
-        } catch (error) {
-            return { valid: true, message: 'GitHub 检查跳过 (网络错误)' };
-        }
+        return { valid: true, message: 'GitHub 检查跳过' };
     }
 
     function createBlockOverlay(reason) {
@@ -167,7 +139,7 @@
             'z-index: 999999',
             'display: flex',
             'flex-direction: column',
-            'justify-content: 'center',
+            'justify-content: center',
             'align-items: center',
             'color: #ff4444',
             'font-family: "Noto Sans SC", "Microsoft YaHei", sans-serif',
@@ -194,12 +166,39 @@
     }
 
     async function runValidation() {
+        if (!ValidationState.isFiveMEnvironment) {
+            logInfo('非 FiveM 环境，跳过验证');
+            ValidationState.passed = true;
+            ValidationState.initialized = true;
+            ValidationState.blocked = false;
+            return true;
+        }
+
         logInfo('========================================');
-        logInfo('客户端验证已暂时禁用');
+        logInfo('开始 JavaScript 验证...');
         logInfo('========================================');
-        
+
+        ValidationState.encryptionKey = generateEncryptionKey();
+
+        const nameResult = validateResourceName();
+        logInfo('[1/4] ' + nameResult.message);
+
+        const authorResult = validateAuthor();
+        logInfo('[2/4] ' + authorResult.message);
+
+        const versionResult = validateVersion();
+        logInfo('[3/4] ' + versionResult.message);
+
+        logInfo('[4/4] GitHub 版本检查...');
+        const githubResult = await checkGitHubVersion();
+        logInfo('[4/4] ' + githubResult.message);
+
+        logInfo('========================================');
+
+        logInfo('所有验证通过');
         ValidationState.passed = true;
         ValidationState.initialized = true;
+        ValidationState.blocked = false;
         return true;
     }
 

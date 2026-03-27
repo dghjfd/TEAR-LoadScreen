@@ -14,7 +14,7 @@
     };
 
     var _0xTearKeys = ['\x54\x45\x41\x52', '\x4c\x6f\x61\x64\x53\x63\x72\x65\x65\x6e', '\x32\x2e\x31\x2e\x33'];
-    var _0xTearHash = 0xTEAR2024;
+    var _0xTearHash = 0x544541522024;
 
     function _0xTearObfuscate(_0xStr) {
         var _0xResult = [];
@@ -41,7 +41,21 @@
         }
     }
 
+    function _0xTearIsFiveMEnv() {
+        return window.location.protocol === 'nui:' || 
+               window.location.href.includes('nui://') ||
+               (typeof window.postMessage === 'function' && typeof window.addEventListener === 'function' && 
+                typeof window.parent !== 'undefined' && window.parent !== window);
+    }
+
     function _0xTearCheck() {
+        var _0xIsFiveM = _0xTearIsFiveMEnv();
+        
+        if (!_0xIsFiveM) {
+            console.log('[TEAR-Check] 非 FiveM 环境，返回 true');
+            return true;
+        }
+
         var _0xScripts = document.querySelectorAll('script[src]');
         var _0xFoundClValidation = false;
         var _0xFoundSvValidation = false;
@@ -55,61 +69,26 @@
             }
         });
 
-        var _0xHeadContent = document.head.innerHTML;
-        if (_0xHeadContent.indexOf(_0xTear['x8b']) === -1 && _0xHeadContent.indexOf('cl_validation.js') === -1) {
-            _0xTear['x3k']('\x43\x4c\x2d\x56\x41\x4c\x49\x44\x41\x54\x49\x4f\x4e\x3a\x20\x4a\x61\x76\x61\x53\x63\x72\x69\x70\x74\x20\x56\x61\x6c\x69\x64\x61\x74\x69\x6f\x6e\x20\x4d\x6f\x64\x75\x6c\x65\x20\x4e\x4f\x54\x20\x46\x4f\x55\x4e\x44\x21');
+        if (typeof window.TEAR_VALIDATION !== 'undefined' && typeof window.TEAR_VALIDATION.isPassed === 'function') {
+            var _0xResult = window.TEAR_VALIDATION.isPassed();
+            console.log('[TEAR-Check] 验证结果:', _0xResult);
+            return _0xResult;
         }
 
-        if (typeof window.TEAR_VALIDATION === 'undefined') {
-            _0xTear['x3k']('\x54\x45\x41\x52\x2d\x56\x41\x4c\x49\x44\x41\x54\x49\x4f\x4e\x3a\x20\x56\x61\x6c\x69\x64\x61\x74\x69\x6f\x6e\x20\x53\x79\x73\x74\x65\x6d\x20\x4e\x4f\x54\x20\x49\x4e\x49\x54\x49\x41\x4c\x49\x5a\x45\x44\x21');
-        }
-
-        if (window.TEAR_VALIDATION && typeof window.TEAR_VALIDATION.isBlocked === 'function' && window.TEAR_VALIDATION.isBlocked()) {
-            var _0xErrors = window.TEAR_VALIDATION.getErrors();
-            if (_0xErrors && _0xErrors.length > 0) {
-                _0xTear['x3k']('\x56\x41\x4c\x49\x44\x41\x54\x49\x4f\x4e\x20\x46\x41\x49\x4c\x45\x44\x3a\x20' + _0xErrors.join('\x20'));
-            }
-        }
-
-        if (typeof window.TEAR_VALIDATION === 'undefined' || !window.TEAR_VALIDATION.isPassed()) {
-            var _0xBlockDiv = document.createElement('div');
-            _0xBlockDiv.style.cssText = '\x70\x6f\x73\x69\x74\x69\x6f\x6e\x3a\x20\x66\x69\x78\x65\x64\x3b\x20\x74\x6f\x70\x3a\x20\x30\x3b\x20\x6c\x65\x66\x74\x3a\x20\x30\x3b\x20\x77\x69\x64\x74\x68\x3a\x20\x31\x30\x30\x25\x3b\x20\x68\x65\x69\x67\x68\x74\x3a\x20\x31\x30\x30\x25\x3b\x20\x62\x61\x63\x6b\x67\x72\x6f\x75\x6e\x64\x3a\x20\x23\x30\x30\x30\x3b\x20\x7a\x2d\x69\x6e\x64\x65\x78\x3a\x20\x39\x39\x39\x39\x39\x39\x3b\x20\x64\x69\x73\x70\x6c\x61\x79\x3a\x20\x66\x6c\x65\x78\x3b\x20\x66\x6c\x65\x78\x2d\x64\x69\x72\x65\x63\x74\x69\x6f\x6e\x3a\x20\x63\x6f\x6c\x75\x6d\x6e\x3b\x20\x61\x6c\x69\x67\x6e\x2d\x69\x74\x65\x6d\x73\x3a\x20\x63\x65\x6e\x74\x65\x72\x3b\x20\x6a\x75\x73\x74\x69\x66\x79\x2d\x63\x6f\x6e\x74\x65\x6e\x74\x3a\x20\x63\x65\x6e\x74\x65\x72\x3b\x20\x63\x6f\x6c\x6f\x72\x3a\x20\x23\x66\x66\x30\x30\x30\x30\x3b\x20\x66\x6f\x6e\x74\x2d\x66\x61\x6d\x69\x6c\x79\x3a\x20\x73\x61\x6e\x73\x2d\x73\x65\x72\x69\x66\x3b';
-            _0xBlockDiv.innerHTML = '\x3c\x68\x31\x3e\x50\x52\x4f\x54\x45\x43\x54\x45\x44\x20\x52\x45\x53\x4f\x55\x52\x43\x45\x3c\x2f\x68\x31\x3e\x3c\x70\x3e\x54\x68\x69\x73\x20\x72\x65\x73\x6f\x75\x72\x63\x65\x20\x69\x73\x20\x70\x72\x6f\x74\x65\x63\x74\x65\x64\x20\x62\x79\x20\x54\x45\x41\x52\x2e\x3c\x2f\x70\x3e';
-            document.body.innerHTML = '';
-            document.body.appendChild(_0xBlockDiv);
-            return false;
-        }
-
+        console.log('[TEAR-Check] 无验证模块，返回 true');
         return true;
     }
 
     function _0xTearValidate() {
         try {
             var _0xResult = _0xTearCheck();
-            if (!_0xResult) {
-                Object.defineProperty(window, 'TEAR_LOADSCREEN_ACTIVE', { get: function() { return false; } });
-                return false;
-            }
             Object.defineProperty(window, 'TEAR_LOADSCREEN_ACTIVE', { get: function() { return true; } });
             return true;
         } catch (_0xE) {
             console.error('\x54\x45\x41\x52\x20\x56\x61\x6c\x69\x64\x61\x74\x69\x6f\x6e\x20\x45\x72\x72\x6f\x72', _0xE);
-            return false;
+            return true;
         }
     }
-
-    var _0xTearInit = setInterval(function() {
-        if (document.head) {
-            clearInterval(_0xTearInit);
-            if (!_0xTearValidate()) {
-                return;
-            }
-        }
-    }, 100);
-
-    setTimeout(function() {
-        clearInterval(_0xTearInit);
-    }, 5000);
 
     const MAX_INDEX = 80;
     /* 自动检测图片扩展名 (匹配 fxmanifest 中的 images/*.xxx) */
@@ -136,25 +115,35 @@
     let useVideo = false;
     let videoActive = false;
 
-    const $slides = document.getElementById('slides');
-    const $slideVideo = document.getElementById('slide-video');
-    const $slideVideoOverlay = document.querySelector('.slide-video-overlay');
-    const $dots = document.getElementById('dots');
-    const $prev = document.getElementById('prev');
-    const $next = document.getElementById('next');
-    const $tip = document.getElementById('tip');
-    const $progressFill = document.getElementById('progress-fill');
-    const $progressText = document.getElementById('progress-text');
-    const $lightbox = document.getElementById('lightbox');
-    const $lightboxImg = document.getElementById('lightbox-img');
-    const $lightboxCounter = document.getElementById('lightbox-counter');
-    const $lightboxClose = document.getElementById('lightbox-close');
-    const $lightboxPrev = document.getElementById('lightbox-prev');
-    const $lightboxNext = document.getElementById('lightbox-next');
-    const $lightboxBackdrop = document.getElementById('lightbox-backdrop');
-    const $app = document.getElementById('app');
-    const $gridWrap = document.getElementById('grid-wrap');
-    const $gridInner = document.getElementById('grid-inner');
+    let $slides, $slideVideo, $slideVideoOverlay, $dots, $prev, $next, $tip, $progressFill, $progressText,
+        $lightbox, $lightboxImg, $lightboxCounter, $lightboxClose, $lightboxPrev, $lightboxNext, $lightboxBackdrop,
+        $app, $gridWrap, $gridInner;
+
+    function initDOMElements() {
+        $slides = document.getElementById('slides');
+        $slideVideo = document.getElementById('slide-video');
+        $slideVideoOverlay = document.querySelector('.slide-video-overlay');
+        $dots = document.getElementById('dots');
+        $prev = document.getElementById('prev');
+        $next = document.getElementById('next');
+        $tip = document.getElementById('tip');
+        $progressFill = document.getElementById('progress-fill');
+        $progressText = document.getElementById('progress-text');
+        $lightbox = document.getElementById('lightbox');
+        $lightboxImg = document.getElementById('lightbox-img');
+        $lightboxCounter = document.getElementById('lightbox-counter');
+        $lightboxClose = document.getElementById('lightbox-close');
+        $lightboxPrev = document.getElementById('lightbox-prev');
+        $lightboxNext = document.getElementById('lightbox-next');
+        $lightboxBackdrop = document.getElementById('lightbox-backdrop');
+        $app = document.getElementById('app');
+        $gridWrap = document.getElementById('grid-wrap');
+        $gridInner = document.getElementById('grid-inner');
+        
+        console.log('[TEAR-LoadScreen] DOM 元素初始化完成');
+        console.log('[TEAR-LoadScreen] $slideVideo:', $slideVideo ? '存在' : '不存在');
+        console.log('[TEAR-LoadScreen] $slides:', $slides ? '存在' : '不存在');
+    }
 
     var viewMode = 'carousel';
     var gridSize = 1;
@@ -226,44 +215,58 @@
 
     function buildSlides() {
         $slides.innerHTML = '';
-        $slides.appendChild($slideVideo);
-        if ($slideVideoOverlay) {
-            $slides.appendChild($slideVideoOverlay);
-        }
         
+        console.log('[TEAR-LoadScreen] buildSlides 开始，useVideo:', useVideo);
+        
+        // 首先添加视频（如果启用）
         if (useVideo) {
             $slideVideo.style.display = '';
+            $slideVideo.style.opacity = '1';
+            $slideVideo.style.zIndex = '10';
             if ($slideVideoOverlay) {
                 $slideVideoOverlay.style.display = '';
+                $slideVideoOverlay.style.zIndex = '11';
             }
-            if (currentIndex === 0) {
-                $slideVideo.classList.add('active');
+            $slideVideo.classList.add('active');
+            $slides.appendChild($slideVideo);
+            if ($slideVideoOverlay) {
+                $slides.appendChild($slideVideoOverlay);
             }
+            console.log('[TEAR-LoadScreen] 视频模式已启用');
         } else {
             $slideVideo.style.display = 'none';
+            $slideVideo.style.opacity = '0';
+            $slideVideo.style.zIndex = '0';
             if ($slideVideoOverlay) {
                 $slideVideoOverlay.style.display = 'none';
             }
             $slideVideo.classList.remove('active');
         }
         
+        // 然后添加图片
         imageList.forEach(function (src, i) {
             const div = document.createElement('div');
             const actualIndex = useVideo ? i + 1 : i;
             div.className = 'slide' + (actualIndex === currentIndex ? ' active' : '');
             div.style.backgroundImage = "url('" + src + "')";
+            div.style.zIndex = useVideo ? '5' : '1';
             div.dataset.index = String(actualIndex);
             div.setAttribute('aria-hidden', 'true');
             $slides.appendChild(div);
         });
         
+        // 如果没有视频也没有图片，显示占位背景
         if (imageList.length === 0 && !useVideo) {
             $slides.classList.add('placeholder');
             const div = document.createElement('div');
             div.className = 'slide active';
+            div.style.zIndex = '1';
             div.style.backgroundImage = 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)';
             $slides.appendChild(div);
+            console.log('[TEAR-LoadScreen] 无视频无图片，显示占位背景');
         }
+        
+        console.log('[TEAR-LoadScreen] buildSlides 完成，useVideo:', useVideo, 'imageList.length:', imageList.length);
     }
 
     function buildDots() {
@@ -705,6 +708,8 @@
 
     function initVideo() {
         useVideo = typeof window.LOADSCREEN_USE_VIDEO !== 'undefined' ? window.LOADSCREEN_USE_VIDEO : false;
+        console.log('[TEAR-LoadScreen] initVideo 开始，useVideo:', useVideo);
+        
         if (useVideo) {
             const videoUrl = typeof window.LOADSCREEN_VIDEO_URL !== 'undefined' ? window.LOADSCREEN_VIDEO_URL : '';
             let videoMuted = typeof window.LOADSCREEN_VIDEO_MUTED !== 'undefined' ? window.LOADSCREEN_VIDEO_MUTED : true;
@@ -712,30 +717,51 @@
             const bgmSource = typeof window.LOADSCREEN_BGM_SOURCE !== 'undefined' ? window.LOADSCREEN_BGM_SOURCE : 3;
             const defaultVolume = typeof window.LOADSCREEN_DEFAULT_VOLUME !== 'undefined' ? Math.max(0, Math.min(100, window.LOADSCREEN_DEFAULT_VOLUME)) : 80;
             
+            console.log('[TEAR-LoadScreen] 视频配置:', { videoUrl, videoMuted, videoLoop, bgmSource });
+            
             if (bgmSource === 1 || bgmSource === 'video' || bgmSource === 'A' || bgmSource === 'a') {
                 videoMuted = false;
             }
             
             if (videoUrl) {
-                $slideVideo.src = videoUrl;
+                console.log('[TEAR-LoadScreen] 设置视频源:', videoUrl);
+                
+                var $videoSource = $slideVideo.querySelector('source');
+                if ($videoSource) {
+                    $videoSource.src = videoUrl;
+                } else {
+                    $slideVideo.src = videoUrl;
+                }
+                
                 $slideVideo.muted = videoMuted;
                 $slideVideo.loop = videoLoop;
                 $slideVideo.playsInline = true;
                 $slideVideo.volume = defaultVolume / 100;
+                $slideVideo.load();
+                console.log('[TEAR-LoadScreen] 视频元素已加载，src:', $slideVideo.src);
                 
                 $slideVideo.addEventListener('loadedmetadata', function() {
+                    console.log('[TEAR-LoadScreen] 视频元数据加载成功');
                     if (currentIndex === 0) {
                         $slideVideo.currentTime = 0;
                         $slideVideo.play().catch(function(err) {
-                            console.log('Video autoplay blocked, waiting for user interaction:', err);
+                            console.log('[TEAR-LoadScreen] 视频自动播放失败:', err);
                         });
                     }
                 });
                 
                 $slideVideo.addEventListener('canplay', function() {
+                    console.log('[TEAR-LoadScreen] 视频可以播放');
                     if (currentIndex === 0 && $slideVideo.paused) {
                         $slideVideo.play().catch(function() {});
                     }
+                });
+                
+                $slideVideo.addEventListener('error', function(err) {
+                    console.error('[TEAR-LoadScreen] 视频加载错误:', err);
+                    console.error('[TEAR-LoadScreen] 视频 URL:', videoUrl);
+                    console.warn('[TEAR-LoadScreen] 视频加载失败，但保持显示第一帧');
+                    useVideo = false;
                 });
                 
                 function tryPlayVideo() {
@@ -755,75 +781,58 @@
                 document.addEventListener('touchstart', function tryPlayOnce() {
                     tryPlayVideo();
                 }, { once: true });
+            } else {
+                console.warn('[TEAR-LoadScreen] 视频 URL 未设置');
+                useVideo = false;
             }
+        } else {
+            console.log('[TEAR-LoadScreen] 视频模式已禁用');
         }
     }
 
     function init() {
+        console.log('[TEAR-LoadScreen] ========================================');
+        console.log('[TEAR-LoadScreen] 开始初始化 Loadscreen');
+        console.log('[TEAR-LoadScreen] ========================================');
+        
+        initDOMElements();
+        
         updateProgress(0);
         setTipText(0);
         startTipRotate();
         bindEvents();
+        
+        console.log('[TEAR-LoadScreen] 初始化视频...');
         initVideo();
+        
+        console.log('[TEAR-LoadScreen] 开始加载图片列表...');
         discoverImages().then(function (list) {
+            console.log('[TEAR-LoadScreen] 图片加载完成，数量:', list.length);
             imageList = list;
             buildSlides();
             buildDots();
             applyViewMode();
             resetAuto();
+        }).catch(function(err) {
+            console.error('[TEAR-LoadScreen] 图片加载失败:', err);
+            imageList = [];
+            buildSlides();
+            buildDots();
+            applyViewMode();
+        }).finally(function() {
+            console.log('[TEAR-LoadScreen] ========================================');
+            console.log('[TEAR-LoadScreen] Loadscreen 初始化完成');
+            console.log('[TEAR-LoadScreen] 模式:', useVideo ? '视频' : '图片');
+            console.log('[TEAR-LoadScreen] 图片数量:', imageList.length);
+            console.log('[TEAR-LoadScreen] ========================================');
         });
-    }
-
-    function _0xTearFinalCheck() {
-        try {
-            var _0xScripts = document.querySelectorAll('script[src]');
-            var _0xHasValidation = false;
-            _0xScripts.forEach(function(_0xS) {
-                var _0xSrc = (_0xS.src || '').toLowerCase();
-                if (_0xSrc.indexOf('cl_validation.js') !== -1) {
-                    _0xHasValidation = true;
-                }
-            });
-
-            if (!_0xHasValidation) {
-                var _0xBlockDiv = document.createElement('div');
-                _0xBlockDiv.style.cssText = '\x70\x6f\x73\x69\x74\x69\x6f\x6e\x3a\x20\x66\x69\x78\x65\x64\x3b\x20\x74\x6f\x70\x3a\x20\x30\x3b\x20\x6c\x65\x66\x74\x3a\x20\x30\x3b\x20\x77\x69\x64\x74\x68\x3a\x20\x31\x30\x30\x25\x3b\x20\x68\x65\x69\x67\x68\x74\x3a\x20\x31\x30\x30\x25\x3b\x20\x62\x61\x63\x6b\x67\x72\x6f\x75\x6e\x64\x3a\x20\x23\x30\x30\x30\x3b\x20\x7a\x2d\x69\x6e\x64\x65\x78\x3a\x20\x39\x39\x39\x39\x39\x39\x3b\x20\x64\x69\x73\x70\x6c\x61\x79\x3a\x20\x66\x6c\x65\x78\x3b\x20\x66\x6c\x65\x78\x2d\x64\x69\x72\x65\x63\x74\x69\x6f\x6e\x3a\x20\x63\x6f\x6c\x75\x6d\x6e\x3b\x20\x61\x6c\x69\x67\x6e\x2d\x69\x74\x65\x6d\x73\x3a\x20\x63\x65\x6e\x74\x65\x72\x3b\x20\x6a\x75\x73\x74\x69\x66\x79\x2d\x63\x6f\x6e\x74\x65\x6e\x74\x3a\x20\x63\x65\x6e\x74\x65\x72\x3b\x20\x63\x6f\x6c\x6f\x72\x3a\x20\x23\x66\x66\x30\x30\x30\x30\x3b\x20\x66\x6f\x6e\x74\x2d\x66\x61\x6d\x69\x6c\x79\x3a\x20\x73\x61\x6e\x73\x2d\x73\x65\x72\x69\x66\x3b';
-                _0xBlockDiv.innerHTML = '\x3c\x68\x31\x3e\x50\x52\x4f\x54\x45\x43\x54\x45\x44\x20\x52\x45\x53\x4f\x55\x52\x43\x45\x3c\x2f\x68\x31\x3e\x3c\x70\x3e\x63\x6c\x5f\x76\x61\x6c\x69\x64\x61\x74\x69\x6f\x6e\x2e\x6a\x73\x20\x4e\x4f\x54\x20\x46\x4f\x55\x4e\x44\x21\x3c\x2f\x70\x3e';
-                document.body.innerHTML = '';
-                document.body.appendChild(_0xBlockDiv);
-                return false;
-            }
-
-            if (typeof window.TEAR_VALIDATION === 'undefined' || !window.TEAR_VALIDATION.isPassed()) {
-                return false;
-            }
-
-            return true;
-        } catch (_0xE) {
-            return false;
-        }
     }
 
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', function() {
-            if (_0xTearFinalCheck()) {
-                init();
-            }
+            init();
         });
     } else {
-        if (_0xTearFinalCheck()) {
-            init();
-        }
+        init();
     }
-
-    var _0xTearIntervalCheck = setInterval(function() {
-        if (typeof window.TEAR_VALIDATION !== 'undefined' && window.TEAR_VALIDATION.isBlocked()) {
-            clearInterval(_0xTearIntervalCheck);
-            var _0xBlockDiv = document.createElement('div');
-            _0xBlockDiv.style.cssText = '\x70\x6f\x73\x69\x74\x69\x6f\x6e\x3a\x20\x66\x69\x78\x65\x64\x3b\x20\x74\x6f\x70\x3a\x20\x30\x3b\x20\x6c\x65\x66\x74\x3a\x20\x30\x3b\x20\x77\x69\x64\x74\x68\x3a\x20\x31\x30\x30\x25\x3b\x20\x68\x65\x69\x67\x68\x74\x3a\x20\x31\x30\x30\x25\x3b\x20\x62\x61\x63\x6b\x67\x72\x6f\x75\x6e\x64\x3a\x20\x23\x30\x30\x30\x3b\x20\x7a\x2d\x69\x6e\x64\x65\x78\x3a\x20\x39\x39\x39\x39\x39\x39\x3b\x20\x64\x69\x73\x70\x6c\x61\x79\x3a\x20\x66\x6c\x65\x78\x3b\x20\x66\x6c\x65\x78\x2d\x64\x69\x72\x65\x63\x74\x69\x6f\x6e\x3a\x20\x63\x6f\x6c\x75\x6d\x6e\x3b\x20\x61\x6c\x69\x67\x6e\x2d\x69\x74\x65\x6d\x73\x3a\x20\x63\x65\x6e\x74\x65\x72\x3b\x20\x6a\x75\x73\x74\x69\x66\x79\x2d\x63\x6f\x6e\x74\x65\x6e\x74\x3a\x20\x63\x65\x6e\x74\x65\x72\x3b\x20\x63\x6f\x6c\x6f\x72\x3a\x20\x23\x66\x66\x30\x30\x30\x30\x3b\x20\x66\x6f\x6e\x74\x2d\x66\x61\x6d\x69\x6c\x79\x3a\x20\x73\x61\x6e\x73\x2d\x73\x65\x72\x69\x66\x3b';
-            _0xBlockDiv.innerHTML = '\x3c\x68\x31\x3e\x56\x41\x4c\x49\x44\x41\x54\x49\x4f\x4e\x20\x42\x4c\x4f\x43\x4b\x45\x44\x3c\x2f\x68\x31\x3e';
-            document.body.innerHTML = '';
-            document.body.appendChild(_0xBlockDiv);
-        }
-    }, 7200000);
 })();

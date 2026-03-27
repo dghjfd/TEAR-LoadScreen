@@ -13,11 +13,7 @@
 </head>
 <body class="tear-fingerprint">
     <div id="tear-validation-marker" data-resource="TEAR-LoadScreen" data-author="TEAR" data-version="2.1.6" data-protected="true"></div>
-    <div id="tear-protected-warning" class="tear-protected-warning" aria-hidden="true">
-        <span data-tear-script="cl_validation.js"></span>
-        <span data-tear-script="sv_validation.lua"></span>
-        <span data-tear-script="cl_validation.lua"></span>
-    </div>
+    <div id="tear-protected-warning" class="tear-protected-warning" aria-hidden="true" style="display: none !important;"></div>
     <div id="click-ripples" class="click-ripples" aria-hidden="true"></div>
     <div id="app">
         <!-- 左上角服务器 LOGO 放置点（在 config.js 中设置 LOADSCREEN_LOGO_URL） -->
@@ -26,7 +22,10 @@
         </div>
         <!-- 轮播层 -->
         <div id="slides" class="slides">
-            <video id="slide-video" class="slide-video" playsinline></video>
+            <video id="slide-video" class="slide-video" playsinline preload="auto" poster="">
+                <source src="" type="video/mp4">
+                您的浏览器不支持视频播放
+            </video>
             <div class="slide-video-overlay" aria-hidden="true"></div>
         </div>
 
