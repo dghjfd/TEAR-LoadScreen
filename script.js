@@ -747,25 +747,59 @@
             var sakuraContainer = document.getElementById('sakura-container');
             if (!sakuraContainer) return;
             
+            // 检查配置是否启用樱花特效
+            var sakuraEnabled = typeof window.LOADSCREEN_SAKURA_ENABLED !== 'undefined' && window.LOADSCREEN_SAKURA_ENABLED;
+            if (!sakuraEnabled) {
+                console.log('[TEAR-LoadScreen] 樱花特效已关闭（配置）');
+                return;
+            }
+            
+            console.log('[TEAR-LoadScreen] 樱花特效已启用');
+            
+            // 樱花颜色选项
+            var sakuraColors = [
+                'linear-gradient(135deg, #ffb7c5 0%, #ff69b4 100%)',  // 粉色
+                'linear-gradient(135deg, #ffc0cb 0%, #ff1493 100%)',  // 深粉
+                'linear-gradient(135deg, #ffe4e1 0%, #db7093 100%)',  // 淡粉
+                'linear-gradient(135deg, #ffd1dc 0%, #c71585 100%)'   // 紫粉
+            ];
+            
             function createSakura(x, y) {
                 var petal = document.createElement('div');
                 petal.className = 'sakura-petal';
                 
-                // 随机大小
-                var size = Math.random() * 10 + 8;
+                // 随机大小 (8-20px)
+                var size = Math.random() * 12 + 8;
                 petal.style.width = size + 'px';
                 petal.style.height = size + 'px';
                 
-                // 设置位置
-                petal.style.left = x + 'px';
-                petal.style.top = y + 'px';
+                // 随机颜色
+                var colorIndex = Math.floor(Math.random() * sakuraColors.length);
+                petal.style.background = sakuraColors[colorIndex];
                 
-                // 随机动画时长
-                var duration = Math.random() * 2 + 3;
+                // 随机起始位置（在点击位置周围）
+                var offsetX = (Math.random() - 0.5) * 100;
+                var offsetY = (Math.random() - 0.5) * 100;
+                petal.style.left = (x + offsetX) + 'px';
+                petal.style.top = (y + offsetY) + 'px';
+                
+                // 随机旋转角度
+                var rotation = Math.random() * 360;
+                petal.style.transform = 'rotate(' + rotation + 'deg)';
+                
+                // 随机动画时长 (3-6 秒)
+                var duration = Math.random() * 3 + 3;
                 petal.style.animationDuration = duration + 's';
                 
-                // 随机延迟
+                // 随机延迟 (0-0.5 秒)
                 petal.style.animationDelay = (Math.random() * 0.5) + 's';
+                
+                // 随机透明度 (0.6-0.9)
+                petal.style.opacity = Math.random() * 0.3 + 0.6;
+                
+                // 随机水平飘移距离 (-150px 到 150px)
+                var driftX = (Math.random() - 0.5) * 300;
+                petal.style.setProperty('--sakura-drift', driftX + 'px');
                 
                 sakuraContainer.appendChild(petal);
                 
@@ -781,14 +815,20 @@
             document.addEventListener('click', function (e) {
                 if (e.target.closest('button') || e.target.closest('input')) return;
                 
-                // 生成 3-5 片樱花
-                var count = Math.floor(Math.random() * 3) + 3;
+                // 随机生成 3-8 片樱花
+                var count = Math.floor(Math.random() * 6) + 3;
                 for (var i = 0; i < count; i++) {
-                    var offsetX = (Math.random() - 0.5) * 60;
-                    var offsetY = (Math.random() - 0.5) * 60;
-                    createSakura(e.clientX + offsetX, e.clientY + offsetY);
+                    createSakura(e.clientX, e.clientY);
                 }
             });
+            
+            // 偶尔自动飘落樱花（增强氛围感）
+            setInterval(function () {
+                if (Math.random() > 0.7) { // 30% 概率
+                    var x = Math.random() * window.innerWidth;
+                    createSakura(x, -20);
+                }
+            }, 2000);
         })();
         if (typeof window.onmessage !== 'undefined') {
             window.addEventListener('message', onMessage);

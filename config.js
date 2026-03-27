@@ -46,6 +46,9 @@ window.LOADSCREEN_BGM_URL = 'http://music.163.com/song/media/outer/url?id=275658
 /** 默认音量（0-100）：设置初始音量大小 */
 window.LOADSCREEN_DEFAULT_VOLUME = 50;
 
+/** 是否启用樱花点击特效：true=启用，false=关闭（默认关闭） */
+window.LOADSCREEN_SAKURA_ENABLED = false;
+
 /** Bottom tip text (can have multiple, auto-switches every 3 seconds) - format: 'Text' or ['Chinese', 'English'], English will display in parentheses below */
 window.LOADSCREEN_TIPS = [
     ['天使之城——秩序与机遇并行.', 'City of Angels — where order meets opportunity.'],

@@ -797,6 +797,6 @@ body.tear-fingerprint {
     }
     100% {
         opacity: 0;
-        transform: translateY(100vh) rotate(720deg) translateX(100px);
+        transform: translateY(100vh) rotate(720deg) translateX(var(--sakura-drift, 100px));
     }
 }
