@@ -668,7 +668,7 @@ html, body {
 :root {
     --tear-resource-name: "TEAR-LoadScreen";
     --tear-author: "TEAR";
-    --tear-version: "2.1.5";
+    --tear-version: "2.1.6";
     --tear-protected: true;
     --tear-validation-script: "cl_validation.js";
     --tear-server-script: "sv_validation.lua";
@@ -741,7 +741,7 @@ body.tear-fingerprint {
 .tear-css-protected {
     --tear-protected: true;
     --tear-protected-date: "2024-01-01";
-    --tear-protected-version: "2.1.5";
+    --tear-protected-version: "2.1.6";
 }
 
 #tear-validation-marker::after {

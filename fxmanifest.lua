@@ -15,7 +15,7 @@ game 'gta5'
 
 author 'TEAR'
 description 'FiveM loadscreen: image carousel with lightbox viewing [PROTECTED]'
-version '2.1.5'
+version '2.1.6'
 
 loadscreen 'index.html'
 loadscreen_cursor 'yes'

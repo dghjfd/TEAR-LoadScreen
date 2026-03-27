@@ -13,7 +13,7 @@
     const VALIDATION_CONFIG = {
         RESOURCE_NAME: 'TEAR-LoadScreen',
         AUTHOR_NAME: 'TEAR',
-        REQUIRED_VERSION: '2.1.5',
+        REQUIRED_VERSION: '2.1.6',
         GITHUB_API_URL: 'https://api.github.com/repos/TEAR-Official/TEAR-LoadScreen/releases/latest',
         ENCRYPTION_KEY_SEED: 'TEAR-LoadScreen-SecureKey-2024-JS',
         VALIDATION_TIMEOUT: 10000,

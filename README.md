@@ -172,4 +172,4 @@ GPL-3.0 License - See [LICENSE](LICENSE) file for details
 
 ---
 
-**Version: 2.1.5** | **Author: TEAR**
+**Version: 2.1.6** | **Author: TEAR**
