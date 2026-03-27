@@ -12,9 +12,8 @@ local VALIDATION = {
     AUTHOR_NAME = "TEAR",
     GITHUB_REPO = "https://api.github.com/repos/TEAR-Official/TEAR-LoadScreen/releases/latest",
     GITHUB_API = "https://api.github.com/repos/TEAR-Official/TEAR-LoadScreen",
-    REQUIRED_VERSION = "2.1.6",
-    ENCRYPTION_KEY = nil,
-    INITIALIZED = false
+    REQUIRED_VERSION = "2.2.1",
+    ENCRYPTION_KEY = nil
 }
 
 local MEDIA_EXTENSIONS = {
@@ -29,7 +28,6 @@ local C = {
     YELLOW = "^3",
     BLUE = "^4",
     CYAN = "^5",
-    MAGENTA = "^6",
     WHITE = "^7",
     GREY = "^8",
     RESET = "^0"
@@ -51,7 +49,7 @@ local function encrypt_data(data, key)
         local char = string.byte(data, i)
         local key_char = string.byte(key, (i - 1) % #key + 1)
         local xor_val = char ~ key_char
-        xor_val = (xor_val >= 0 and xor_val <= 255) and xor_val or (xor_val % 256)
+        xor_val = (xor_val &gt;= 0 and xor_val &lt;= 255) and xor_val or (xor_val % 256)
         encrypted[i] = string.char(xor_val)
     end
     return table.concat(encrypted)
@@ -96,7 +94,7 @@ local function validate_version(client_version)
         for part in string.gmatch(v, "[^.]+") do
             table.insert(parts, tonumber(part) or 0)
         end
-        while #parts < 3 do table.insert(parts, 0) end
+        while #parts &lt; 3 do table.insert(parts, 0) end
         return parts
     end
 
@@ -109,11 +107,11 @@ local function validate_version(client_version)
         patch = p_client[3] - p_required[3]
     }
 
-    local forced = math.abs(diffs.major) > 1 or
-                   math.abs(diffs.minor) > 1 or
-                   math.abs(diffs.patch) > 1
+    local forced = math.abs(diffs.major) &gt; 1 or
+                   math.abs(diffs.minor) &gt; 1 or
+                   math.abs(diffs.patch) &gt; 1
 
-    if diffs.major < 0 or diffs.minor < 0 or diffs.patch < 0 then
+    if diffs.major &lt; 0 or diffs.minor &lt; 0 or diffs.patch &lt; 0 then
         if forced then
             return false, C.RED .. "[TEAR-LoadScreen 强制更新] 版本过旧! 当前: " .. client_version .. " → 最低要求: " .. required .. C.RESET
         else
@@ -121,7 +119,7 @@ local function validate_version(client_version)
         end
     end
 
-    if p_client[1] > p_required[1] or p_client[2] > p_required[2] or p_client[3] > p_required[3] then
+    if p_client[1] &gt; p_required[1] or p_client[2] &gt; p_required[2] or p_client[3] &gt; p_required[3] then
         return true, C.GREEN .. "版本验证成功 (检测到更新版本)" .. C.RESET
     end
 
@@ -160,7 +158,7 @@ local function fetch_url(url)
         end, "GET", "", {
             ["Content-Type"] = "application/json",
             ["Accept"] = "application/json",
-            ["User-Agent"] = "TEAR-LoadScreen-Validator/2.1.6"
+            ["User-Agent"] = "TEAR-LoadScreen-Validator/2.2.1"
         })
     end
     return result, status
@@ -240,62 +238,68 @@ end
 
 local function print_header()
     print("")
-    print(C.CYAN .. "  _______  _______  _______  _______     ____   ____  _______ " .. C.RESET)
-    print(C.CYAN .. " |  ____||  ____||  ____||  ____ \\   |  __ \\ / __||  ____|" .. C.RESET)
-    print(C.CYAN .. " | |     | |     | |     | |__) |   | |__) || |   | |" .. C.RESET)
-    print(C.CYAN .. " | |     | |     | |     |  _  /    |  _  / | |   | |" .. C.RESET)
-    print(C.CYAN .. " | |____ | |____ | |____ | | \\ \\   | | \\ \\ | |___| |____" .. C.RESET)
-    print(C.CYAN .. " |______||______||______||_|  \\_\\  |_|  \\_\\|______||______|" .. C.RESET)
-    print("")
-    print(C.WHITE .. "    TEAR-LoadScreen v" .. VALIDATION.REQUIRED_VERSION .. C.RESET)
-    print(C.WHITE .. "    Protected by TEAR Validation System" .. C.RESET)
+    print(C.CYAN .. "╔════════════════════════════════════════════════════════════╗" .. C.RESET)
+    print(C.CYAN .. "║" .. C.GREEN .. "  ████████╗███████╗ █████╗ ██████╗ " .. C.CYAN .. "║" .. C.RESET)
+    print(C.CYAN .. "║" .. C.GREEN .. "  ╚══██╔══╝██╔════╝██╔══██╗██╔══██╗" .. C.CYAN .. "║" .. C.RESET)
+    print(C.CYAN .. "║" .. C.GREEN .. "     ██║   █████╗  ███████║██████╔╝" .. C.CYAN .. "║" .. C.RESET)
+    print(C.CYAN .. "║" .. C.GREEN .. "     ██║   ██╔══╝  ██╔══██║██╔══██╗" .. C.CYAN .. "║" .. C.RESET)
+    print(C.CYAN .. "║" .. C.GREEN .. "     ██║   ███████╗██║  ██║██║  ██║" .. C.CYAN .. "║" .. C.RESET)
+    print(C.CYAN .. "║" .. C.GREEN .. "     ╚═╝   ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝" .. C.CYAN .. "║" .. C.RESET)
+    print(C.CYAN .. "╠════════════════════════════════════════════════════════════╣" .. C.RESET)
+    print(C.CYAN .. "║" .. C.WHITE .. "                                                            ║" .. C.RESET)
+    print(C.CYAN .. "║" .. C.WHITE .. "  " .. C.GREEN .. "TEAR-LoadScreen" .. C.WHITE .. "          " .. C.WHITE .. "版本: " .. C.CYAN .. "v" .. VALIDATION.REQUIRED_VERSION .. C.WHITE .. "          ║" .. C.RESET)
+    print(C.CYAN .. "║" .. C.WHITE .. "  " .. C.YELLOW .. "作者: TEAR" .. C.WHITE .. "                                                  ║" .. C.RESET)
+    print(C.CYAN .. "║" .. C.WHITE .. "  " .. C.GREY .. "Protected by TEAR Validation System" .. C.WHITE .. "                        ║" .. C.RESET)
+    print(C.CYAN .. "║" .. C.WHITE .. "                                                            ║" .. C.RESET)
+    print(C.CYAN .. "╚════════════════════════════════════════════════════════════╝" .. C.RESET)
     print("")
 end
 
 local function print_result()
-    if #VALIDATION_STATE.ERRORS > 0 then
+    if #VALIDATION_STATE.ERRORS &gt; 0 then
         print("")
-        print(C.RED .. "  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" .. C.RESET)
-        print(C.RED .. "       验证失败 - 资源已禁用" .. C.RESET)
-        print(C.RED .. "  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" .. C.RESET)
-        print("")
+        print(C.RED .. "╔════════════════════════════════════════════════════════════╗" .. C.RESET)
+        print(C.RED .. "║" .. C.WHITE .. "  ❌ 验证失败 - 资源已禁用" .. string.rep(" ", 29) .. "║" .. C.RESET)
+        print(C.RED .. "╠════════════════════════════════════════════════════════════╣" .. C.RESET)
         for _, err in ipairs(VALIDATION_STATE.ERRORS) do
-            print("  > " .. err)
+            print(C.RED .. "║" .. C.WHITE .. "  " .. err .. string.rep(" ", 50 - #err) .. "║" .. C.RESET)
         end
+        print(C.RED .. "╠════════════════════════════════════════════════════════════╣" .. C.RESET)
+        if #VALIDATION_STATE.SUSPICIOUS &gt; 0 then
+            for _, info in ipairs(VALIDATION_STATE.SUSPICIOUS) do
+                print(C.YELLOW .. "║" .. C.WHITE .. "  ⚠️  " .. info .. string.rep(" ", 47 - #info) .. "║" .. C.RESET)
+            end
+            print(C.YELLOW .. "╠════════════════════════════════════════════════════════════╣" .. C.RESET)
+        end
+        print(C.YELLOW .. "║" .. C.WHITE .. "  请恢复原始配置后重试" .. string.rep(" ", 32) .. "║" .. C.RESET)
+        print(C.RED .. "╚════════════════════════════════════════════════════════════╝" .. C.RESET)
         print("")
-        if #VALIDATION_STATE.SUSPICIOUS > 0 then
-            for _, info in ipairs(VALIDATION_STATE.SUSPICIOUS) do
-                print("  > " .. info)
-            end
-            print("")
-        end
-        print(C.YELLOW .. "  请恢复原始配置后重试" .. C.RESET)
-        print(C.WHITE .. "  =========================================" .. C.RESET)
     else
-        if #VALIDATION_STATE.SUSPICIOUS > 0 then
+        if #VALIDATION_STATE.SUSPICIOUS &gt; 0 then
             print("")
-            print(C.YELLOW .. "  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" .. C.RESET)
-            print(C.YELLOW .. "       验证通过 - 检测到疑似修改" .. C.RESET)
-            print(C.YELLOW .. "  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" .. C.RESET)
-            print("")
+            print(C.YELLOW .. "╔════════════════════════════════════════════════════════════╗" .. C.RESET)
+            print(C.YELLOW .. "║" .. C.WHITE .. "  ⚠️ 验证通过 - 检测到疑似修改" .. string.rep(" ", 26) .. "║" .. C.RESET)
+            print(C.YELLOW .. "╠════════════════════════════════════════════════════════════╣" .. C.RESET)
             for _, info in ipairs(VALIDATION_STATE.SUSPICIOUS) do
-                print("  > " .. info)
+                print(C.YELLOW .. "║" .. C.WHITE .. "  " .. info .. string.rep(" ", 50 - #info) .. "║" .. C.RESET)
             end
+            print(C.YELLOW .. "╠════════════════════════════════════════════════════════════╣" .. C.RESET)
+            print(C.WHITE .. "║" .. C.GREY .. "  如需帮助请联系作者" .. string.rep(" ", 36) .. "║" .. C.RESET)
+            print(C.YELLOW .. "╚════════════════════════════════════════════════════════════╝" .. C.RESET)
             print("")
-            print(C.WHITE .. "  如需帮助请联系作者" .. C.RESET)
-            print(C.WHITE .. "  =========================================" .. C.RESET)
         else
             print("")
-            print(C.GREEN .. "  =========================================" .. C.RESET)
-            print(C.GREEN .. "       验证通过 - 所有检查成功!" .. C.RESET)
-            print(C.GREEN .. "  =========================================" .. C.RESET)
+            print(C.GREEN .. "╔════════════════════════════════════════════════════════════╗" .. C.RESET)
+            print(C.GREEN .. "║" .. C.WHITE .. "  ✅ 验证通过 - 所有检查成功!" .. string.rep(" ", 28) .. "║" .. C.RESET)
+            print(C.GREEN .. "╚════════════════════════════════════════════════════════════╝" .. C.RESET)
+            print("")
         end
     end
 end
 
-AddEventHandler("onResourceStart", function(resourceName)
-    if resourceName ~= GetCurrentResourceName() then return end
-
+local function perform_validation()
+    local resourceName = GetCurrentResourceName()
+    
     print_header()
     clear_state()
     VALIDATION_STATE.PASSED = false
@@ -306,12 +310,13 @@ AddEventHandler("onResourceStart", function(resourceName)
         VALIDATION_STATE.UPDATE_INFO = github_info
     end
 
-    print(C.WHITE .. "  ----------------------------------------" .. C.RESET)
-    print(C.WHITE .. "  开始验证..." .. C.RESET)
-    print(C.WHITE .. "  ----------------------------------------" .. C.RESET)
+    print(C.WHITE .. "╔════════════════════════════════════════════════════════════╗" .. C.RESET)
+    print(C.WHITE .. "║" .. C.CYAN .. "  开始验证..." .. string.rep(" ", 43) .. "║" .. C.RESET)
+    print(C.WHITE .. "╠════════════════════════════════════════════════════════════╣" .. C.RESET)
 
     local name_valid, name_msg = validate_resource_name()
-    print("  [1/4] " .. name_msg)
+    local name_prefix = name_valid and C.GREEN .. "  ✓" or C.RED .. "  ✗"
+    print(C.WHITE .. "║" .. name_prefix .. " [1/4] " .. name_msg .. string.rep(" ", 45 - #name_msg) .. "║" .. C.RESET)
     if not name_valid then add_error(name_msg) end
 
     local manifest_path = LoadResourceFile(resourceName, "fxmanifest.lua")
@@ -319,55 +324,68 @@ AddEventHandler("onResourceStart", function(resourceName)
         local author_match = string.match(manifest_path, "author%s+['\"]([^'\"]+)['\"]")
         if author_match then
             local author_valid, author_msg = validate_author_name(author_match)
-            print("  [2/4] " .. author_msg)
+            local author_prefix = author_valid and C.GREEN .. "  ✓" or C.RED .. "  ✗"
+            print(C.WHITE .. "║" .. author_prefix .. " [2/4] " .. author_msg .. string.rep(" ", 45 - #author_msg) .. "║" .. C.RESET)
             if not author_valid then add_error(author_msg) end
         else
-            print("  [2/4] " .. C.RED .. "无法解析作者" .. C.RESET)
+            local author_msg = C.RED .. "无法解析作者" .. C.RESET
+            print(C.WHITE .. "║" .. C.RED .. "  ✗ [2/4] " .. author_msg .. string.rep(" ", 45 - #author_msg) .. "║" .. C.RESET)
             add_error(C.RED .. "[TEAR-LoadScreen 验证错误] 无法从 fxmanifest.lua 解析作者" .. C.RESET)
         end
     else
-        print("  [2/4] " .. C.RED .. "无法加载 fxmanifest.lua" .. C.RESET)
+        local author_msg = C.RED .. "无法加载 fxmanifest.lua" .. C.RESET
+        print(C.WHITE .. "║" .. C.RED .. "  ✗ [2/4] " .. author_msg .. string.rep(" ", 45 - #author_msg) .. "║" .. C.RESET)
         add_error(C.RED .. "[TEAR-LoadScreen 验证错误] 无法加载 fxmanifest.lua" .. C.RESET)
     end
 
     local client_version = GetResourceMetadata(resourceName, "version", 0) or "0.0.0"
     local version_valid, version_msg = validate_version(client_version)
-    print("  [3/4] " .. version_msg)
+    local version_prefix = version_valid and C.GREEN .. "  ✓" or C.YELLOW .. "  !"
+    print(C.WHITE .. "║" .. version_prefix .. " [3/4] " .. version_msg .. string.rep(" ", 45 - #version_msg) .. "║" .. C.RESET)
     if not version_valid then
         add_error(version_msg)
         VALIDATION_STATE.VERSION_OUTDATED = true
     end
 
-    print("  [4/4] " .. C.CYAN .. "正在执行 GitHub 文件对比..." .. C.RESET)
+    print(C.WHITE .. "║" .. C.CYAN .. "  🔍 [4/4] 正在执行 GitHub 文件对比..." .. string.rep(" ", 21) .. "║" .. C.RESET)
     local compare_result = compare_files_with_github()
 
     if not compare_result.skipped then
-        print("")
-        print(C.WHITE .. "  ----------------------------------------" .. C.RESET)
-        print(C.WHITE .. "  GitHub 文件对比: " .. compare_result.checked .. "/" .. compare_result.total .. " (排除 " .. compare_result.media_excluded .. " 个媒体文件)" .. C.RESET)
-        if #compare_result.missing > 0 then
+        print(C.WHITE .. "╠════════════════════════════════════════════════════════════╣" .. C.RESET)
+        local file_msg = "  GitHub 文件对比: " .. compare_result.checked .. "/" .. compare_result.total .. " (排除 " .. compare_result.media_excluded .. " 个媒体文件)"
+        print(C.WHITE .. "║" .. C.WHITE .. file_msg .. string.rep(" ", 50 - #file_msg) .. "║" .. C.RESET)
+        if #compare_result.missing &gt; 0 then
             for _, f in ipairs(compare_result.missing) do
-                print(C.RED .. "    - 缺失: " .. f .. C.RESET)
+                local missing_msg = "  - 缺失: " .. f
+                print(C.WHITE .. "║" .. C.RED .. missing_msg .. string.rep(" ", 50 - #missing_msg) .. "║" .. C.RESET)
             end
         end
-        if #compare_result.extra > 0 then
+        if #compare_result.extra &gt; 0 then
             for _, f in ipairs(compare_result.extra) do
-                print(C.YELLOW .. "    - 多余: " .. f .. C.RESET)
+                local extra_msg = "  - 多余: " .. f
+                print(C.WHITE .. "║" .. C.YELLOW .. extra_msg .. string.rep(" ", 50 - #extra_msg) .. "║" .. C.RESET)
             end
         end
         if #compare_result.missing == 0 and #compare_result.extra == 0 then
-            print(C.GREEN .. "    全部文件匹配" .. C.RESET)
+            local success_msg = "  ✅ 全部文件匹配"
+            print(C.WHITE .. "║" .. C.GREEN .. success_msg .. string.rep(" ", 50 - #success_msg) .. "║" .. C.RESET)
         end
     end
+    print(C.WHITE .. "╚════════════════════════════════════════════════════════════╝" .. C.RESET)
 
     if VALIDATION_STATE.VERSION_OUTDATED and VALIDATION_STATE.UPDATE_INFO then
         local info = VALIDATION_STATE.UPDATE_INFO
         if info.body and info.body ~= "" then
             print("")
-            print(C.YELLOW .. "  ========== 版本更新日志 ==========" .. C.RESET)
-            print(C.WHITE .. "  最新版本: v" .. (info.version or "") .. C.RESET)
-            print(C.WHITE .. "  下载地址: " .. (info.url or "") .. C.RESET)
-            print(C.WHITE .. "  ----------------------------------------" .. C.RESET)
+            print(C.YELLOW .. "╔════════════════════════════════════════════════════════════╗" .. C.RESET)
+            print(C.YELLOW .. "║" .. C.WHITE .. "  📦 版本更新日志" .. string.rep(" ", 38) .. "║" .. C.RESET)
+            print(C.YELLOW .. "╠════════════════════════════════════════════════════════════╣" .. C.RESET)
+            local latest_msg = "  最新版本: v" .. (info.version or "")
+            print(C.WHITE .. "║" .. C.GREEN .. latest_msg .. string.rep(" ", 50 - #latest_msg) .. "║" .. C.RESET)
+            local url_msg = "  下载地址: " .. (info.url or "")
+            if #url_msg &gt; 50 then url_msg = url_msg:sub(1, 47) .. "..." end
+            print(C.WHITE .. "║" .. C.BLUE .. url_msg .. string.rep(" ", 50 - #url_msg) .. "║" .. C.RESET)
+            print(C.WHITE .. "╠════════════════════════════════════════════════════════════╣" .. C.RESET)
             local lines = {}
             for line in string.gmatch(info.body, "[^\r\n]+") do
                 line = line:gsub("^%s*(.-)%s*$", "%1")
@@ -375,17 +393,28 @@ AddEventHandler("onResourceStart", function(resourceName)
             end
             for i = 1, math.min(#lines, 8) do
                 local display_line = lines[i]
-                if #display_line > 55 then display_line = display_line:sub(1, 52) .. "..." end
-                print(C.WHITE .. "  " .. display_line .. C.RESET)
+                if #display_line &gt; 48 then display_line = display_line:sub(1, 45) .. "..." end
+                print(C.WHITE .. "║" .. C.WHITE .. "  " .. display_line .. string.rep(" ", 48 - #display_line) .. "║" .. C.RESET)
             end
-            if #lines > 8 then print(C.GREY .. "  ... (更多内容请查看 GitHub)" .. C.RESET) end
-            print(C.YELLOW .. "  =========================================" .. C.RESET)
+            if #lines &gt; 8 then
+                local more_msg = "  ... (更多内容请查看 GitHub)"
+                print(C.WHITE .. "║" .. C.GREY .. more_msg .. string.rep(" ", 50 - #more_msg) .. "║" .. C.RESET)
+            end
+            print(C.YELLOW .. "╚════════════════════════════════════════════════════════════╝" .. C.RESET)
         end
     end
 
     print_result()
 
     VALIDATION_STATE.PASSED = (#VALIDATION_STATE.ERRORS == 0)
+end
+
+AddEventHandler("onResourceStart", function(resourceName)
+    if resourceName ~= GetCurrentResourceName() then return end
+    
+    SetTimeout(2000, function()
+        perform_validation()
+    end)
 end)
 
 RegisterNetEvent("TEAR-LoadScreen:RequestValidation")
