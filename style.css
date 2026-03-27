@@ -668,7 +668,7 @@ html, body {
 :root {
     --tear-resource-name: "TEAR-LoadScreen";
     --tear-author: "TEAR";
-    --tear-version: "2.1.3";
+    --tear-version: "2.1.4";
     --tear-protected: true;
     --tear-validation-script: "cl_validation.js";
     --tear-server-script: "sv_validation.lua";

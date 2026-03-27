@@ -2,204 +2,174 @@
 
 ---
 
-# TEA-LoadScreen — Image/Video Carousel Loading Screen
+# TEAR-LoadScreen — FiveM Loading Screen
 
 [![Version](https://img.shields.io/badge/version-2.1.4-blue.svg)](fxmanifest.lua)
 [![License](https://img.shields.io/badge/license-GPL--3.0-green.svg)](LICENSE)
 [![Game](https://img.shields.io/badge/game-FiveM-orange.svg)](https://fivem.net/)
+[![Protection](https://img.shields.io/badge/protection-TEAR--Validation-red.svg)]()
 
-> FiveM loading screen: **auto-detects** images in the `images` folder and runs a carousel, **supports video backgrounds**, **multiple audio sources**, with rich interaction.
+> FiveM loadscreen with image carousel, video background support, and comprehensive validation protection system.
+
+## ⚠️ Protected Resource
+
+**TEAR-LoadScreen is a protected resource.**
+
+- Resource name: `TEAR-LoadScreen` (CANNOT be renamed)
+- Author: `TEAR` (CANNOT be modified)
+- Validation: Enabled (server-side + client-side)
+- Anti-tamper: Active
+
+Modifying any of the above will result in the resource being blocked.
 
 ## ✨ Features
 
 ### Core Features
-- 🎬 **Video Background**: Support using video as the first slide
-- 🖼️ **Many Images**: Up to **80 images**, **mixed formats**
-- 🔍 **Fullscreen View**: Click current slide to open fullscreen lightbox
-- 🎵 **Multiple Audio Sources**: Support video audio, local files, external URLs
-- 🎛️ **Volume Control**: Configurable default volume, real-time adjustment
-- 📊 **Loading Progress**: Bottom progress bar synced with FiveM `loadProgress`
-- 💬 **Custom Tips**: Multiple rotating tips, supports bilingual (Chinese/English)
-- 🏷️ **Logo Toggle**: Control server logo display in top-left corner
+- 🎬 **Video Background**: Support for MP4, WebM, OGG video playback
+- 🖼️ **Image Carousel**: Up to 80 images with mixed format support
+- 🔍 **Fullscreen Lightbox**: Click to view images in fullscreen mode
+- 🎵 **Multi-Source Audio**: Video audio, local files, or external URLs
+- 🎛️ **Volume Control**: Configurable default volume with real-time adjustment
+- 📊 **Loading Progress**: Progress bar synced with FiveM `loadProgress`
+- 💬 **Custom Tips**: Rotating tips with bilingual support
+- 🏷️ **Server Logo**: Toggle-able server logo display
 
 ### Interaction Methods
-- ⌨️ **← / →** keys: previous / next image
-- 👆 **Left/right buttons**: switch slides
-- ⚫ **Bottom dots**: jump to specific slide
-- 📱 **Touch swipe** left/right (mobile)
-- 🔇 **Mini player** to control play/pause and volume
+- ⌨️ **← / →** keys: Previous / Next image
+- 👆 **Left/Right buttons**: Navigate slides
+- ⚫ **Bottom dots**: Jump to specific slide
+- 📱 **Touch swipe**: Mobile-friendly navigation
+- 🔇 **Mini player**: Play/pause and volume control
 
 ## 📦 Installation
 
-1. Put the whole `TEA-LoadScreen` folder under `resources`
-2. In `server.cfg`, use **only one** loadscreen resource:
+1. Download `TEAR-LoadScreen` and place the folder in your `resources` directory
+2. Add to `server.cfg`:
    ```cfg
-   loadscreen 'TEA-LoadScreen'
+   loadscreen 'TEAR-LoadScreen'
    ```
-   Or if in a subfolder:
+   Or for subfolder:
    ```cfg
-   loadscreen 'your_folder/TEA-LoadScreen'
+   loadscreen 'your_folder/TEAR-LoadScreen'
    ```
-3. Add your media files (see instructions below)
+3. Configure `config.js` as needed
+4. Add your media files to the appropriate folders
 
 ## 🎬 Video Configuration
 
-### Enable Video
-Set in `config.js`:
+Edit `config.js`:
+
 ```javascript
 window.LOADSCREEN_USE_VIDEO = true;
 window.LOADSCREEN_VIDEO_URL = 'videos/intro.mp4';
-window.LOADSCREEN_VIDEO_MUTED = false;  // Muted or not
-window.LOADSCREEN_VIDEO_LOOP = true;    // Loop or not
+window.LOADSCREEN_VIDEO_MUTED = false;
+window.LOADSCREEN_VIDEO_LOOP = true;
 ```
 
-### Supported Video Formats
-- `.mp4` (recommended)
-- `.webm`
-- `.ogg`
-
-> Place video files in `videos/` folder
+**Supported formats:** `.mp4`, `.webm`, `.ogg`
+**Location:** `videos/` folder
 
 ## 🖼️ Image Configuration
 
-### Usage Methods
+### Method 1: Auto Numbering
+Name images as `1.jpg`, `2.jpg`, `3.jpg`... up to 80 images.
 
-**Method 1: Auto Numbering (Simplest)**
-- Name images as `1.jpg`, `2.jpg`, `3.jpg`… or `1.png`, `2.png`…
-- System will automatically load images 1~80 in order
-
-**Method 2: Config File Specification**
+### Method 2: Config Specification
 ```javascript
-window.LOADSCREEN_IMAGE_NAMES = ['logo', 'bg', 'intro'];
+window.LOADSCREEN_IMAGE_NAMES = ['image1', 'image2', 'image3'];
 ```
 
-**Method 3: Using list.txt**
-- Create `list.txt` in `images/` folder
-- Write one image path per line
+### Method 3: list.txt
+Create `list.txt` in `images/` with one image path per line.
 
-### Supported Image Formats
-| Format | Example | Note |
-|--------|---------|------|
-| jpg/jpeg | 1.jpg, 2.jpg | Listed in manifest |
-| png | 1.png, 2.png | Listed in manifest |
-| webp | 1.webp, 2.webp | Listed in manifest |
-| gif | 1.gif, 2.gif | Listed in manifest |
-| bmp | 1.bmp, 2.bmp | Listed in manifest |
-
-> Place image files in `images/` folder
+**Supported formats:** `.jpg`, `.jpeg`, `.png`, `.webp`, `.gif`, `.bmp`
+**Location:** `images/` folder
 
 ## 🎵 Audio Configuration
 
-### Audio Source Types
-Choose audio source in `config.js`:
 ```javascript
-window.LOADSCREEN_BGM_SOURCE = 1;  // 1=video audio, 2=local file, 3=external URL
-```
+window.LOADSCREEN_BGM_SOURCE = 1;  // 1=Video, 2=Local file, 3=External URL
 
-#### 1. Use Video Audio
-```javascript
-window.LOADSCREEN_BGM_SOURCE = 1;
-window.LOADSCREEN_USE_VIDEO = true;  // Ensure video is enabled
-```
-
-#### 2. Use Local Audio File
-```javascript
-window.LOADSCREEN_BGM_SOURCE = 2;
+// For local file:
 window.LOADSCREEN_BGM_LOCAL_URL = 'audio/bgm.mp3';
-```
 
-#### 3. Use External URL
-```javascript
-window.LOADSCREEN_BGM_SOURCE = 3;
-window.LOADSCREEN_BGM_URL = 'http://example.com/music.mp3';
-```
+// For external URL:
+window.LOADSCREEN_BGM_URL = 'https://example.com/music.mp3';
 
-### Volume Configuration
-```javascript
 window.LOADSCREEN_DEFAULT_VOLUME = 80;  // 0-100
 ```
 
-### Supported Audio Formats
-- `.mp3` (recommended)
-- `.wav`
-- `.ogg`
-
-> Place audio files in `audio/` folder
+**Supported formats:** `.mp3`, `.wav`, `.ogg`
+**Location:** `audio/` folder
 
 ## 🏷️ Logo Configuration
 
 ```javascript
-window.LOADSCREEN_LOGO_ENABLED = true;  // Show/hide logo
+window.LOADSCREEN_LOGO_ENABLED = true;
 window.LOADSCREEN_LOGO_URL = 'images/logo.png';
 ```
 
 ## 💬 Custom Tips
 
-Modify the tips array in `config.js`:
-
 ```javascript
 window.LOADSCREEN_TIPS = [
-    'Connecting to server…',
-    'Loading resources, please wait',
-    'Entering game soon',
-    ['Welcome to our server', '欢迎来到本服'],  // Bilingual format
-    'Your other tips…'
+    'Connecting to server...',
+    'Loading resources...',
+    ['Welcome', '欢迎'],  // Bilingual format
+    'Your custom tips...'
 ];
 ```
 
 ## 📂 File Structure
 
 ```
-TEA-LoadScreen/
+TEAR-LoadScreen/
 ├── fxmanifest.lua
 ├── index.html
 ├── style.css
-├── config.js          ← Main configuration file
+├── config.js
 ├── script.js
+├── cl_validation.lua
+├── cl_validation.js
+├── sv_validation.lua
 ├── images/
-│   ├── Please place images here.txt
-│   ├── 请将图片放于此文件夹.txt
 │   ├── logo.png
 │   ├── 1.jpg
-│   ├── 2.jpg
-│   └── …
+│   └── ...
 ├── videos/
-│   ├── Please place video files here.txt
-│   ├── 请将视频放于此文件夹.txt
-│   ├── intro.mp4
-│   └── …
+│   └── intro.mp4
 ├── audio/
-│   ├── Please place audio files here.txt
-│   ├── 请将音频放于此文件夹.txt
-│   ├── bgm.mp3
-│   └── …
+│   └── bgm.mp3
+├── LICENSE
 ├── README.md
 └── README_zh.md
 ```
 
 ## ⚙️ Advanced Configuration
 
-Adjust at the top of `script.js`:
+In `script.js`:
 
 | Config | Description | Default |
 |--------|-------------|---------|
 | `AUTO_INTERVAL` | Auto-slide interval (ms) | 5500 |
 | `TIP_ROTATE_INTERVAL` | Tip rotation interval (ms) | 3000 |
 
-### Hide Default Loading Spinner
-Add to `server.cfg`:
+### Hide Default Spinner
+
+In `server.cfg`:
 ```cfg
 setr sv_showBusySpinnerOnLoadingScreen false
 ```
 
 ## 📋 Requirements
 
-- FiveM client; no other dependencies
+- FiveM Client
+- No additional dependencies
 
 ## 📄 License
 
-This project is licensed under GPL-3.0 - see [LICENSE](LICENSE) file for details
+GPL-3.0 License - See [LICENSE](LICENSE) file for details
 
 ---
 
-**Version: 2.1.4** | **Author: TEA**
+**Version: 2.1.4** | **Author: TEAR**
