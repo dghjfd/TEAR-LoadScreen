@@ -52,7 +52,7 @@ local function encrypt_data(data, key)
         local char = string.byte(data, i)
         local key_char = string.byte(key, (i - 1) % #key + 1)
         local xor_val = char ~ key_char
-        xor_val = (xor_val &gt;= 0 and xor_val &lt;= 255) and xor_val or (xor_val % 256)
+        xor_val = (xor_val >= 0 and xor_val <= 255) and xor_val or (xor_val % 256)
         encrypted[i] = string.char(xor_val)
     end
     return table.concat(encrypted)
@@ -97,7 +97,7 @@ local function validate_version(client_version)
         for part in string.gmatch(v, "[^.]+") do
             table.insert(parts, tonumber(part) or 0)
         end
-        while #parts &lt; 3 do table.insert(parts, 0) end
+        while #parts < 3 do table.insert(parts, 0) end
         return parts
     end
 
@@ -110,11 +110,11 @@ local function validate_version(client_version)
         patch = p_client[3] - p_required[3]
     }
 
-    local forced = math.abs(diffs.major) &gt; 1 or
-                   math.abs(diffs.minor) &gt; 1 or
-                   math.abs(diffs.patch) &gt; 1
+    local forced = math.abs(diffs.major) > 1 or
+                   math.abs(diffs.minor) > 1 or
+                   math.abs(diffs.patch) > 1
 
-    if diffs.major &lt; 0 or diffs.minor &lt; 0 or diffs.patch &lt; 0 then
+    if diffs.major < 0 or diffs.minor < 0 or diffs.patch < 0 then
         if forced then
             return false, C.RED .. "[TEAR-LoadScreen 强制更新] 版本过旧! 当前: " .. client_version .. " → 最低要求: " .. required .. C.RESET
         else
@@ -122,7 +122,7 @@ local function validate_version(client_version)
         end
     end
 
-    if p_client[1] &gt; p_required[1] or p_client[2] &gt; p_required[2] or p_client[3] &gt; p_required[3] then
+    if p_client[1] > p_required[1] or p_client[2] > p_required[2] or p_client[3] > p_required[3] then
         return true, C.GREEN .. "版本验证成功 (检测到更新版本)" .. C.RESET
     end
 
@@ -259,7 +259,7 @@ local function print_header()
 end
 
 local function print_result()
-    if #VALIDATION_STATE.ERRORS &gt; 0 then
+    if #VALIDATION_STATE.ERRORS > 0 then
         print("")
         print(C.RED .. "╔════════════════════════════════════════════════════════════╗" .. C.RESET)
         print(C.RED .. "║" .. C.WHITE .. "  ❌ 验证失败 - 资源已禁用" .. string.rep(" ", 29) .. "║" .. C.RESET)
@@ -268,7 +268,7 @@ local function print_result()
             print(C.RED .. "║" .. C.WHITE .. "  " .. err .. string.rep(" ", 50 - #err) .. "║" .. C.RESET)
         end
         print(C.RED .. "╠════════════════════════════════════════════════════════════╣" .. C.RESET)
-        if #VALIDATION_STATE.SUSPICIOUS &gt; 0 then
+        if #VALIDATION_STATE.SUSPICIOUS > 0 then
             for _, info in ipairs(VALIDATION_STATE.SUSPICIOUS) do
                 print(C.YELLOW .. "║" .. C.WHITE .. "  ⚠️  " .. info .. string.rep(" ", 47 - #info) .. "║" .. C.RESET)
             end
@@ -278,7 +278,7 @@ local function print_result()
         print(C.RED .. "╚════════════════════════════════════════════════════════════╝" .. C.RESET)
         print("")
     else
-        if #VALIDATION_STATE.SUSPICIOUS &gt; 0 then
+        if #VALIDATION_STATE.SUSPICIOUS > 0 then
             print("")
             print(C.YELLOW .. "╔════════════════════════════════════════════════════════════╗" .. C.RESET)
             print(C.YELLOW .. "║" .. C.WHITE .. "  ⚠️ 验证通过 - 检测到疑似修改" .. string.rep(" ", 26) .. "║" .. C.RESET)
@@ -357,13 +357,13 @@ local function perform_validation()
         print(C.WHITE .. "╠════════════════════════════════════════════════════════════╣" .. C.RESET)
         local file_msg = "  GitHub 文件对比: " .. compare_result.checked .. "/" .. compare_result.total .. " (排除 " .. compare_result.media_excluded .. " 个媒体文件)"
         print(C.WHITE .. "║" .. C.WHITE .. file_msg .. string.rep(" ", 50 - #file_msg) .. "║" .. C.RESET)
-        if #compare_result.missing &gt; 0 then
+        if #compare_result.missing > 0 then
             for _, f in ipairs(compare_result.missing) do
                 local missing_msg = "  - 缺失: " .. f
                 print(C.WHITE .. "║" .. C.RED .. missing_msg .. string.rep(" ", 50 - #missing_msg) .. "║" .. C.RESET)
             end
         end
-        if #compare_result.extra &gt; 0 then
+        if #compare_result.extra > 0 then
             for _, f in ipairs(compare_result.extra) do
                 local extra_msg = "  - 多余: " .. f
                 print(C.WHITE .. "║" .. C.YELLOW .. extra_msg .. string.rep(" ", 50 - #extra_msg) .. "║" .. C.RESET)
@@ -386,7 +386,7 @@ local function perform_validation()
             local latest_msg = "  最新版本: v" .. (info.version or "")
             print(C.WHITE .. "║" .. C.GREEN .. latest_msg .. string.rep(" ", 50 - #latest_msg) .. "║" .. C.RESET)
             local url_msg = "  下载地址: " .. (info.url or "")
-            if #url_msg &gt; 50 then url_msg = url_msg:sub(1, 47) .. "..." end
+            if #url_msg > 50 then url_msg = url_msg:sub(1, 47) .. "..." end
             print(C.WHITE .. "║" .. C.BLUE .. url_msg .. string.rep(" ", 50 - #url_msg) .. "║" .. C.RESET)
             print(C.WHITE .. "╠════════════════════════════════════════════════════════════╣" .. C.RESET)
             local lines = {}
@@ -396,10 +396,10 @@ local function perform_validation()
             end
             for i = 1, math.min(#lines, 8) do
                 local display_line = lines[i]
-                if #display_line &gt; 48 then display_line = display_line:sub(1, 45) .. "..." end
+                if #display_line > 48 then display_line = display_line:sub(1, 45) .. "..." end
                 print(C.WHITE .. "║" .. C.WHITE .. "  " .. display_line .. string.rep(" ", 48 - #display_line) .. "║" .. C.RESET)
             end
-            if #lines &gt; 8 then
+            if #lines > 8 then
                 local more_msg = "  ... (更多内容请查看 GitHub)"
                 print(C.WHITE .. "║" .. C.GREY .. more_msg .. string.rep(" ", 50 - #more_msg) .. "║" .. C.RESET)
             end
