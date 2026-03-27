@@ -239,7 +239,6 @@ local function compare_files_with_github()
 end
 
 local function print_header()
-    Citizen.Wait(100)
     print("")
     print(C.CYAN .. "  _______  _______  _______  _______     ____   ____  _______ " .. C.RESET)
     print(C.CYAN .. " |  ____||  ____||  ____||  ____ \\   |  __ \\ / __||  ____|" .. C.RESET)
