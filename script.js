@@ -112,10 +112,10 @@
     }, 5000);
 
     const MAX_INDEX = 80;
-    /* Auto-detect image extensions (matches images/*.xxx in fxmanifest) */
+    /* 自动检测图片扩展名 (匹配 fxmanifest 中的 images/*.xxx) */
     const EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'bmp'];
     const AUTO_INTERVAL = 5500;
-    /** Bottom tip text, customizable: set window.LOADSCREEN_TIPS = ['Tip1','Tip2',...] before loading index.html */
+    /** 底部提示文本，可自定义：在加载 index.html 前设置 window.LOADSCREEN_TIPS = ['提示1','提示2',...] */
     const TIPS = (typeof window.LOADSCREEN_TIPS !== 'undefined' && Array.isArray(window.LOADSCREEN_TIPS) && window.LOADSCREEN_TIPS.length > 0)
         ? window.LOADSCREEN_TIPS
         : [
@@ -159,7 +159,7 @@
     var viewMode = 'carousel';
     var gridSize = 1;
 
-    /** Try to load a single image, returns path on success, null on failure */
+    /** 尝试加载单个图片，成功返回路径，失败返回 null */
     function tryLoadImage(path) {
         return new Promise(function (resolve) {
             const img = new Image();
@@ -169,7 +169,7 @@
         });
     }
 
-    /** Try extensions in order for a name (no suffix), returns first existing path */
+    /** 按扩展名顺序尝试，返回第一个存在的路径 */
     function tryFirstForName(baseName) {
         var p = tryLoadImage('images/' + baseName + '.' + EXTENSIONS[0]);
         for (var e = 1; e < EXTENSIONS.length; e++) {
@@ -183,7 +183,7 @@
         return p;
     }
 
-    /** Priority: list.txt (one path per line); then LOADSCREEN_IMAGE_NAMES in config (no suffix); finally 1~80 fallback */
+    /** 优先级：list.txt (每行一个路径)；其次是 config 中的 LOADSCREEN_IMAGE_NAMES (无后缀)；最后是 1~80 回退 */
     function discoverImages() {
         var listUrl = (typeof window.LOADSCREEN_IMAGE_LIST_URL !== 'undefined' && window.LOADSCREEN_IMAGE_LIST_URL)
             ? window.LOADSCREEN_IMAGE_LIST_URL
@@ -398,7 +398,7 @@
         }
     }
 
-    /** Convert single tip to HTML: supports string or [Chinese, English], English displays in parentheses on next line */
+    /** 将单个提示转换为 HTML：支持字符串或 [中文, 英文]，英文显示在下一行括号中 */
     function renderTipHtml(item) {
         if (item == null) return '';
         var esc = function (s) {
@@ -438,7 +438,7 @@
         progressPercent = Math.min(100, Math.max(0, percent));
         $progressFill.style.width = progressPercent + '%';
         $progressText.textContent = Math.round(progressPercent) + '%';
-        /* No longer rewrite text based on progress to avoid flicker conflict with timed rotation; only startTipRotate switches every 3 seconds */
+        /* 不再根据进度重写文本，以避免与计时轮换的闪烁冲突；仅 startTipRotate 每 3 秒切换一次 */
         if (percent >= 100 && tipRotateTimer) {
             clearInterval(tipRotateTimer);
             tipRotateTimer = null;
@@ -509,7 +509,7 @@
                 $logoWrap.style.display = 'none';
             }
         }
-        /* Main interface left/right arrows are hidden, no longer bind switch events */
+        /* 主界面左右箭头已隐藏，不再绑定切换事件 */
         $dots.addEventListener('click', function (e) {
             var btn = e.target.closest('.dot');
             if (btn && btn.dataset.index !== undefined) {
@@ -518,7 +518,7 @@
                 goTo(targetIndex);
             }
         });
-        /* Background carousel click has no effect, no longer opens lightbox */
+        /* 背景轮播点击无效，不再打开灯箱 */
         $lightboxClose.addEventListener('click', closeLightbox);
         $lightboxBackdrop.addEventListener('click', closeLightbox);
         $lightboxPrev.addEventListener('click', function (e) { e.stopPropagation(); prev(); updateLightboxContent(); });
@@ -663,9 +663,9 @@
                 if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); updateLightboxContent(); return; }
                 if (e.key === 'ArrowRight') { e.preventDefault(); next(); updateLightboxContent(); return; }
             }
-            /* Main interface does not respond to left/right keys to switch images, only auto-rotate */
+            /* 主界面不响应左右键切换图片，仅自动轮播 */
         });
-        /* Touch swipe only works in lightbox, main interface does not switch */
+        /* 触摸滑动仅在灯箱中生效，主界面不切换 */
         var touchStartX = 0;
         document.addEventListener('touchstart', function (e) {
             touchStartX = e.touches[0].clientX;
@@ -678,7 +678,7 @@
                 updateLightboxContent();
             }
         }, { passive: true });
-        /* Mouse click ripple effect */
+        /* 鼠标点击涟漪效果 */
         (function () {
             var container = document.getElementById('click-ripples');
             if (!container) return;

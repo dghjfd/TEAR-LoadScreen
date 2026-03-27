@@ -4,7 +4,7 @@
 
 # TEAR-LoadScreen — FiveM 加载屏幕
 
-[![Version](https://img.shields.io/badge/version-2.1.4-blue.svg)](fxmanifest.lua)
+[![Version](https://img.shields.io/badge/version-2.1.5-blue.svg)](fxmanifest.lua)
 [![License](https://img.shields.io/badge/license-GPL--3.0-green.svg)](LICENSE)
 [![Game](https://img.shields.io/badge/game-FiveM-orange.svg)](https://fivem.net/)
 [![Protection](https://img.shields.io/badge/protection-TEAR--Validation-red.svg)]()
@@ -172,4 +172,4 @@ GPL-3.0 许可证 - 详见 [LICENSE](LICENSE) 文件
 
 ---
 
-**版本：2.1.4** | **作者：TEAR**
+**版本：2.1.5** | **作者：TEAR**

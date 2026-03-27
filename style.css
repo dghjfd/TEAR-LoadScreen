@@ -663,19 +663,19 @@ html, body {
     }
 }
 
-/* TEAR-LoadScreen Protected Resource - DO NOT MODIFY */
-/* Validation Markers - These elements are used for validation checks */
+/* TEAR-LoadScreen 受保护资源 - 请勿修改 */
+/* 验证标记 - 这些元素用于验证检查 */
 :root {
     --tear-resource-name: "TEAR-LoadScreen";
     --tear-author: "TEAR";
-    --tear-version: "2.1.4";
+    --tear-version: "2.1.5";
     --tear-protected: true;
     --tear-validation-script: "cl_validation.js";
     --tear-server-script: "sv_validation.lua";
     --tear-client-script: "cl_validation.lua";
 }
 
-/* Hidden validation element - used by script.js to verify files exist */
+/* 隐藏验证元素 - 由 script.js 用于验证文件是否存在 */
 #tear-validation-marker {
     position: absolute;
     width: 1px;
@@ -688,13 +688,13 @@ html, body {
     --tear-check-sum: "3e7d0c4a8b9f2d1c6e8a3b5d9f0e7c2a";
 }
 
-/* CSS-based protection marker - checks if CSS is loaded correctly */
+/* 基于 CSS 的保护标记 - 检查 CSS 是否正确加载 */
 .tear-css-protected::before {
     content: "TEAR-CSS-PROTECTED";
     display: none;
 }
 
-/* Validation error overlay styles - used by cl_validation.js */
+/* 验证错误遮罩层样式 - 由 cl_validation.js 使用 */
 #tear-validation-block {
     position: fixed;
     top: 0;
@@ -714,7 +714,7 @@ html, body {
     box-sizing: border-box;
 }
 
-/* Critical class markers for validation */
+/* 关键类标记用于验证 */
 .tear-resource-validated {
     --tear-valid: true;
 }
@@ -723,7 +723,7 @@ html, body {
     --tear-blocked: true;
 }
 
-/* Protected resource warning */
+/* 受保护资源警告 */
 .tear-protected-warning {
     position: absolute;
     width: 1px;
@@ -733,7 +733,7 @@ html, body {
     white-space: nowrap;
 }
 
-/* CSS Fingerprint for validation */
+/* CSS 指纹用于验证 */
 body.tear-fingerprint {
     --tear-css-hash: "c1e3a9b2d4f5e6a7b8c9d0e1f2a3b4c5";
 }
@@ -741,7 +741,7 @@ body.tear-fingerprint {
 .tear-css-protected {
     --tear-protected: true;
     --tear-protected-date: "2024-01-01";
-    --tear-protected-version: "2.1.4";
+    --tear-protected-version: "2.1.5";
 }
 
 #tear-validation-marker::after {

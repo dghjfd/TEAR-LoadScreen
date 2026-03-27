@@ -1,13 +1,13 @@
 --[[
-    TEA-LoadScreen - Auto-detect images + high-interaction loadscreen
-    - Auto-detect images in images/ by extension, no numbers needed; supports list.txt or config-specified order
-    - Keyboard/click/progress bar/touch swipe
+    TEA-LoadScreen - 自动检测图片 + 高交互性加载屏幕
+    - 自动检测 images/ 中的图片扩展名，无需编号；支持 list.txt 或配置指定的顺序
+    - 键盘/鼠标点击/进度条/触摸滑动
 
-    THIS RESOURCE IS PROTECTED BY TEAR VALIDATION SYSTEM
-    - Resource name: TEAR-LoadScreen (CANNOT BE MODIFIED)
-    - Author: TEAR (CANNOT BE MODIFIED)
-    - GitHub Version Check: ENABLED
-    - Tamper Protection: ACTIVE
+    此资源受 TEAR 验证系统保护
+    - 资源名称：TEAR-LoadScreen（禁止修改）
+    - 作者：TEAR（禁止修改）
+    - GitHub 版本检查：已启用
+    - 防篡改保护：已激活
 ]]
 
 fx_version 'cerulean'
@@ -15,7 +15,7 @@ game 'gta5'
 
 author 'TEAR'
 description 'FiveM loadscreen: image carousel with lightbox viewing [PROTECTED]'
-version '2.1.4'
+version '2.1.5'
 
 loadscreen 'index.html'
 loadscreen_cursor 'yes'
