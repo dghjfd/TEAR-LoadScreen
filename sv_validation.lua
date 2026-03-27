@@ -31,6 +31,7 @@ local C = {
     CYAN = "^5",
     MAGENTA = "^6",
     WHITE = "^7",
+    GREY = "^8",
     RESET = "^0"
 }
 
