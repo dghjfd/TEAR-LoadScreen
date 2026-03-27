@@ -1,38 +1,69 @@
 /**
- * 加载屏配置
+ * Loadscreen Configuration
  */
 
-/** 左上角服务器 LOGO：填图片路径（如 images/logo.png），留空则不显示 */
+/** Whether to use video as the first slide: true=use video, false=use image */
+window.LOADSCREEN_USE_VIDEO = true;
+
+/** Video file path (only effective when LOADSCREEN_USE_VIDEO = true): supports mp4, webm, ogg, etc. */
+window.LOADSCREEN_VIDEO_URL = 'videos/intro.mp4';
+
+/** Whether to play video muted: true=muted, false=with sound (Note: browser may require user interaction to play videos with sound) */
+window.LOADSCREEN_VIDEO_MUTED = true;
+
+/** Whether to loop video: true=loop, false=play once */
+window.LOADSCREEN_VIDEO_LOOP = true;
+
+/** Whether to show server custom logo: true=show, false=hide (quick toggle) */
+window.LOADSCREEN_LOGO_ENABLED = false;
+
+/** Server logo in top-left corner: fill in image path (e.g., images/logo.png), leave empty to hide (only effective when LOADSCREEN_LOGO_ENABLED = true) */
 window.LOADSCREEN_LOGO_URL = 'images/logo.png';
 
-/** 可选：图片列表方式（不写则自动尝试 list.txt → 本配置 → 1~80）
- * 方式一：在 images/ 下放 list.txt，每行一个路径，如 images/logo.png 或 logo.png
- * 方式二：设置下面数组为「无后缀」文件名，自动识别 png/jpg/jpeg/webp/gif/bmp，如 ['logo','bg','intro']
+/** Optional: Image list method (If not set, automatically try list.txt → this config → 1~80)
+ * Method 1: Place list.txt in images/, one path per line, e.g., images/logo.png or logo.png
+ * Method 2: Set the array below to "no suffix" filenames, auto-detects png/jpg/jpeg/webp/gif/bmp, e.g., ['logo','bg','intro']
  */
 // window.LOADSCREEN_IMAGE_LIST_URL = 'images/list.txt';
 // window.LOADSCREEN_IMAGE_NAMES = ['logo', 'bg', 'intro'];
 
-/** 背景音乐：填外部链接，留空则不播放 */
+/** Whether to enable background music: true=enable, false=disable (quick toggle) */
+window.LOADSCREEN_BGM_ENABLED = false;
+
+/** Background music source type:
+ * 1 - Use video audio (only effective when video is enabled)
+ * 2 - Use local audio file
+ * 3 - Use external URL
+ */
+window.LOADSCREEN_BGM_SOURCE = 1;
+
+/** Local audio file path (only effective when LOADSCREEN_BGM_SOURCE = 2): supports mp3, wav, ogg, etc. */
+window.LOADSCREEN_BGM_LOCAL_URL = 'audio/bgm.mp3';
+
+/** 外部链接音频（仅在 LOADSCREEN_BGM_SOURCE = 3 时生效） */
 window.LOADSCREEN_BGM_URL = 'http://music.163.com/song/media/outer/url?id=2756582166.mp3';
 
-/** 底部提示文案（可多条轮播，每 3 秒自动切换）- 格式：'中文' 或 [中文, 英文]，英文会显示在下方括号内 */
+/** 默认音量（0-100）：设置初始音量大小 */
+window.LOADSCREEN_DEFAULT_VOLUME = 50;
+
+/** Bottom tip text (can have multiple, auto-switches every 3 seconds) - format: 'Text' or ['Chinese', 'English'], English will display in parentheses below */
 window.LOADSCREEN_TIPS = [
-    ['自然之州——职责与社区在此交汇。', 'The Natural State — where duty and community meet.'],
-    ['心怀敬畏进入，带着使命履职。', 'Enter with respect, serve with purpose.'],
-    ['阿肯色：同一社区，同一标准。', 'Arkansas: One community, one standard.'],
-    ['准备。响应。守护。', 'Prepare. Respond. Protect.'],
-    ['你的使命，从这里开始。', 'Your mission begins here.'],
-    ['欢迎来到自然之州，以荣誉立身。', 'Welcome to the Natural State. Stand with honor.'],
-    ['正直。职责。自然之州之道。', 'Integrity. Duty. The Arkansas way.'],
-    ['徽章因付出而获得，非轻易授予。', 'The badge is earned, not given.'],
-    ['正在连接阿肯色。', 'Connecting to Arkansas...'],
-    ['自然之州，静候你的到来。', 'The Natural State awaits you.'],
-    ['遵守规则，尊重他人，享受角色。', 'Follow the rules, respect others, enjoy the role.'],
-    ['每一次出警都是一次故事。', 'Every call is a story.'],
-    ['警灯亮起时，责任重于一切。', 'When the lights go on, duty comes first.'],
-    ['社区安全，从你我做起。', 'Community safety starts with us.'],
-    ['以角色之名，书写阿肯色故事。', 'In character, we write the Arkansas story.'],
-    ['耐心加载，精彩即将开始。', 'Loading... the best is yet to come.'],
-    ['连接中，请稍候…', 'Connecting, please wait...'],
-    ['我们在这里等你。', 'We are here for you.']
+    ['天使之城——秩序与机遇并行.', 'City of Angels — where order meets opportunity.'],
+    ['欢迎来到洛杉矶，新的故事即将开始.', 'Welcome to Los Angeles, your story starts now.'],
+    ['准备上岗，L.A. 的每个街区都需要你.', 'Suit up, every block in L.A. needs you.'],
+    ['在这座不夜城，责任从不下线.', 'In this city that never sleeps, duty never signs off.'],
+    ['从市中心到海岸线，保持专业.', 'From Downtown to the coastline, stay professional.'],
+    ['尊重角色，尊重规则，尊重每一位玩家.', 'Respect the role, the rules, and every player.'],
+    ['每一次呼叫，都是一段新的剧情.', 'Every call is a new chapter.'],
+    ['警灯亮起，洛圣都进入响应状态.', 'When the lights flash, Los Santos is in response mode.'],
+    ['你的一言一行，塑造这座城市.', 'Your actions shape this city.'],
+    ['连接洛杉矶网络中…', 'Connecting to Los Angeles network...'],
+    ['保持冷静，加载很快完成.', 'Stay calm, loading will finish soon.'],
+    ['遵循流程，团队协作优先.', 'Follow procedure, teamwork first.'],
+    ['守住底线，才能守住城市.', 'Hold the line, hold the city.'],
+    ['这里是洛杉矶，节奏快，标准更高.', 'This is Los Angeles: fast pace, higher standards.'],
+    ['白天巡逻，夜晚值守，随时待命.', 'Patrol by day, stand watch by night.'],
+    ['海风吹过港口，任务正在靠近.', 'Sea breeze over the port, another task inbound.'],
+    ['请稍候，正在进入洛杉矶.', 'Please wait, entering Los Angeles...'],
+    ['准备完毕后，舞台属于你.', 'When ready, the stage is yours.']
 ];

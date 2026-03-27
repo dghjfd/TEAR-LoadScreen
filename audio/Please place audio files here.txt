@@ -1,0 +1,18 @@
+Please place your audio files in this folder
+
+Supported audio formats:
+- .mp3 (recommended)
+- .wav
+- .ogg
+
+Usage Instructions:
+1. Place your audio file in this folder (e.g., bgm.mp3)
+2. Open config.js for configuration
+3. Set LOADSCREEN_BGM_SOURCE to 2 (or 'local' or 'B')
+4. Set LOADSCREEN_BGM_LOCAL_URL to your audio path (e.g., 'audio/bgm.mp3')
+5. Ensure LOADSCREEN_BGM_ENABLED is set to true
+
+Audio source options:
+- 1 or 'video' or 'A' - Use video audio (only effective when video is enabled)
+- 2 or 'local' or 'B' - Use local audio file
+- 3 or 'url' or 'C' - Use external URL (default)

@@ -2,18 +2,18 @@
     'use strict';
 
     const MAX_INDEX = 80;
-    /* 自动识别的图片后缀（与 fxmanifest 中 images/*.xxx 一致） */
+    /* Auto-detect image extensions (matches images/*.xxx in fxmanifest) */
     const EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'bmp'];
     const AUTO_INTERVAL = 5500;
-    /** 底部提示条文案，可自定义：在加载 index.html 前设置 window.LOADSCREEN_TIPS = ['提示1','提示2',...] */
+    /** Bottom tip text, customizable: set window.LOADSCREEN_TIPS = ['Tip1','Tip2',...] before loading index.html */
     const TIPS = (typeof window.LOADSCREEN_TIPS !== 'undefined' && Array.isArray(window.LOADSCREEN_TIPS) && window.LOADSCREEN_TIPS.length > 0)
         ? window.LOADSCREEN_TIPS
         : [
-            '正在连接服务器…',
-            '加载资源中，请稍候',
-            '即将进入游戏',
-            '感谢您的耐心等待',
-            '欢迎来到本服'
+            'Connecting to server…',
+            'Loading resources, please wait',
+            'Entering game shortly',
+            'Thank you for your patience',
+            'Welcome to our server'
         ];
     const TIP_ROTATE_INTERVAL = 3000;
 
@@ -23,8 +23,12 @@
     let progressPercent = 0;
     let tipRotateTimer = null;
     let tipRotateIndex = 0;
+    let useVideo = false;
+    let videoActive = false;
 
     const $slides = document.getElementById('slides');
+    const $slideVideo = document.getElementById('slide-video');
+    const $slideVideoOverlay = document.querySelector('.slide-video-overlay');
     const $dots = document.getElementById('dots');
     const $prev = document.getElementById('prev');
     const $next = document.getElementById('next');
@@ -45,7 +49,7 @@
     var viewMode = 'carousel';
     var gridSize = 1;
 
-    /** 尝试加载单张图，成功返回路径，失败返回 null */
+    /** Try to load a single image, returns path on success, null on failure */
     function tryLoadImage(path) {
         return new Promise(function (resolve) {
             const img = new Image();
@@ -55,7 +59,7 @@
         });
     }
 
-    /** 对某个名称（无后缀）按扩展名顺序尝试，返回第一个存在的路径 */
+    /** Try extensions in order for a name (no suffix), returns first existing path */
     function tryFirstForName(baseName) {
         var p = tryLoadImage('images/' + baseName + '.' + EXTENSIONS[0]);
         for (var e = 1; e < EXTENSIONS.length; e++) {
@@ -69,7 +73,7 @@
         return p;
     }
 
-    /** 优先 list.txt（每行一个路径）；否则 config 中 LOADSCREEN_IMAGE_NAMES（无后缀）；最后 1~80 兜底 */
+    /** Priority: list.txt (one path per line); then LOADSCREEN_IMAGE_NAMES in config (no suffix); finally 1~80 fallback */
     function discoverImages() {
         var listUrl = (typeof window.LOADSCREEN_IMAGE_LIST_URL !== 'undefined' && window.LOADSCREEN_IMAGE_LIST_URL)
             ? window.LOADSCREEN_IMAGE_LIST_URL
@@ -112,15 +116,38 @@
 
     function buildSlides() {
         $slides.innerHTML = '';
+        $slides.appendChild($slideVideo);
+        if ($slideVideoOverlay) {
+            $slides.appendChild($slideVideoOverlay);
+        }
+        
+        if (useVideo) {
+            $slideVideo.style.display = '';
+            if ($slideVideoOverlay) {
+                $slideVideoOverlay.style.display = '';
+            }
+            if (currentIndex === 0) {
+                $slideVideo.classList.add('active');
+            }
+        } else {
+            $slideVideo.style.display = 'none';
+            if ($slideVideoOverlay) {
+                $slideVideoOverlay.style.display = 'none';
+            }
+            $slideVideo.classList.remove('active');
+        }
+        
         imageList.forEach(function (src, i) {
             const div = document.createElement('div');
-            div.className = 'slide' + (i === 0 ? ' active' : '');
+            const actualIndex = useVideo ? i + 1 : i;
+            div.className = 'slide' + (actualIndex === currentIndex ? ' active' : '');
             div.style.backgroundImage = "url('" + src + "')";
-            div.dataset.index = String(i);
+            div.dataset.index = String(actualIndex);
             div.setAttribute('aria-hidden', 'true');
             $slides.appendChild(div);
         });
-        if (imageList.length === 0) {
+        
+        if (imageList.length === 0 && !useVideo) {
             $slides.classList.add('placeholder');
             const div = document.createElement('div');
             div.className = 'slide active';
@@ -131,13 +158,14 @@
 
     function buildDots() {
         $dots.innerHTML = '';
-        if (imageList.length <= 1) return;
-        for (let i = 0; i < imageList.length; i++) {
+        const totalItems = (useVideo ? 1 : 0) + imageList.length;
+        if (totalItems <= 1) return;
+        for (let i = 0; i < totalItems; i++) {
             const btn = document.createElement('button');
             btn.type = 'button';
             btn.className = 'dot' + (i === 0 ? ' active' : '');
             btn.dataset.index = String(i);
-            btn.setAttribute('aria-label', '第' + (i + 1) + '张');
+            btn.setAttribute('aria-label', 'Image ' + (i + 1));
             $dots.appendChild(btn);
         }
     }
@@ -155,7 +183,7 @@
             cell.dataset.index = String(i);
             cell.setAttribute('role', 'button');
             cell.setAttribute('tabindex', '0');
-            cell.setAttribute('aria-label', '图片 ' + (i + 1) + ' / ' + imageList.length);
+            cell.setAttribute('aria-label', 'Image ' + (i + 1) + ' / ' + imageList.length);
             $gridInner.appendChild(cell);
         });
         if (animateEnter) {
@@ -196,38 +224,71 @@
     }
 
     function goTo(index) {
-        const len = imageList.length || 1;
-        currentIndex = ((index % len) + len) % len;
+        const totalItems = (useVideo ? 1 : 0) + imageList.length;
+        const len = totalItems || 1;
+        const newIndex = ((index % len) + len) % len;
+        
+        if (useVideo && currentIndex === 0 && newIndex !== 0) {
+            return;
+        }
+        
+        currentIndex = newIndex;
+        
+        if (useVideo && currentIndex === 0) {
+            videoActive = true;
+            $slideVideo.classList.add('active');
+            if ($slideVideo.paused) {
+                $slideVideo.play().catch(function() {});
+            }
+        } else {
+            videoActive = false;
+            $slideVideo.classList.remove('active');
+            $slideVideo.pause();
+        }
+        
         document.querySelectorAll('.slide').forEach(function (el, i) {
-            el.classList.toggle('active', i === currentIndex);
+            const actualSlideIndex = useVideo ? i + 1 : i;
+            el.classList.toggle('active', actualSlideIndex === currentIndex);
         });
+        
         document.querySelectorAll('.dot').forEach(function (el, i) {
             el.classList.toggle('active', i === currentIndex);
             if (i === currentIndex && el.scrollIntoView) el.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
         });
-        document.querySelectorAll('.grid-cell').forEach(function (el, i) {
-            el.classList.toggle('active', i === currentIndex);
-        });
+        
+        if (useVideo) {
+            document.querySelectorAll('.grid-cell').forEach(function (el, i) {
+                el.classList.toggle('active', i + 1 === currentIndex);
+            });
+        } else {
+            document.querySelectorAll('.grid-cell').forEach(function (el, i) {
+                el.classList.toggle('active', i === currentIndex);
+            });
+        }
+        
         if ($lightbox && $lightbox.classList.contains('open')) updateLightboxContent();
         resetAuto();
     }
 
     function next() {
+        if (useVideo && currentIndex === 0) return;
         goTo(currentIndex + 1);
     }
 
     function prev() {
+        if (useVideo && currentIndex === 0) return;
         goTo(currentIndex - 1);
     }
 
     function resetAuto() {
         if (autoTimer) clearInterval(autoTimer);
+        if (useVideo && currentIndex === 0) return;
         if (imageList.length > 1) {
             autoTimer = setInterval(next, AUTO_INTERVAL);
         }
     }
 
-    /** 将单条文案转为 HTML：支持字符串或 [中文, 英文]，英文显示在下一行括号内 */
+    /** Convert single tip to HTML: supports string or [Chinese, English], English displays in parentheses on next line */
     function renderTipHtml(item) {
         if (item == null) return '';
         var esc = function (s) {
@@ -267,7 +328,7 @@
         progressPercent = Math.min(100, Math.max(0, percent));
         $progressFill.style.width = progressPercent + '%';
         $progressText.textContent = Math.round(progressPercent) + '%';
-        /* 不再根据进度改写文案，避免与定时轮播冲突导致闪烁；仅由 startTipRotate 每 3 秒切换 */
+        /* No longer rewrite text based on progress to avoid flicker conflict with timed rotation; only startTipRotate switches every 3 seconds */
         if (percent >= 100 && tipRotateTimer) {
             clearInterval(tipRotateTimer);
             tipRotateTimer = null;
@@ -312,38 +373,42 @@
             $lightboxImg.classList.add('swapping');
             setTimeout(function () {
                 $lightboxImg.src = src;
-                $lightboxImg.alt = '图片 ' + (currentIndex + 1) + ' / ' + imageList.length;
+                $lightboxImg.alt = 'Image ' + (currentIndex + 1) + ' / ' + imageList.length;
                 $lightboxCounter.textContent = (currentIndex + 1) + ' / ' + imageList.length;
                 $lightboxImg.classList.remove('swapping');
             }, 180);
         } else {
             $lightboxImg.src = src;
-            $lightboxImg.alt = '图片 ' + (currentIndex + 1) + ' / ' + imageList.length;
+            $lightboxImg.alt = 'Image ' + (currentIndex + 1) + ' / ' + imageList.length;
             $lightboxCounter.textContent = (currentIndex + 1) + ' / ' + imageList.length;
         }
     }
 
     function bindEvents() {
+        var logoEnabled = typeof window.LOADSCREEN_LOGO_ENABLED !== 'undefined' ? window.LOADSCREEN_LOGO_ENABLED : true;
         var logoUrl = typeof window.LOADSCREEN_LOGO_URL !== 'undefined' ? String(window.LOADSCREEN_LOGO_URL).trim() : '';
         var $logoWrap = document.getElementById('server-logo-wrap');
         var $logoImg = document.getElementById('server-logo');
         if ($logoWrap && $logoImg) {
-            if (logoUrl) {
+            if (logoEnabled && logoUrl) {
                 $logoImg.src = logoUrl;
                 $logoWrap.setAttribute('aria-hidden', 'false');
+                $logoWrap.style.display = '';
                 $logoImg.onerror = function () { $logoWrap.style.display = 'none'; };
             } else {
                 $logoWrap.style.display = 'none';
             }
         }
-        /* 主界面左右箭头已隐藏，不再绑定切换 */
+        /* Main interface left/right arrows are hidden, no longer bind switch events */
         $dots.addEventListener('click', function (e) {
             var btn = e.target.closest('.dot');
             if (btn && btn.dataset.index !== undefined) {
-                goTo(parseInt(btn.dataset.index, 10));
+                var targetIndex = parseInt(btn.dataset.index, 10);
+                if (useVideo && currentIndex === 0 && targetIndex !== 0) return;
+                goTo(targetIndex);
             }
         });
-        /* 背景轮播图点击无效果，不再打开大图 */
+        /* Background carousel click has no effect, no longer opens lightbox */
         $lightboxClose.addEventListener('click', closeLightbox);
         $lightboxBackdrop.addEventListener('click', closeLightbox);
         $lightboxPrev.addEventListener('click', function (e) { e.stopPropagation(); prev(); updateLightboxContent(); });
@@ -351,10 +416,49 @@
         var $bgm = document.getElementById('bgm');
         var $playBtn = document.getElementById('player-play');
         var $volumeRange = document.getElementById('player-volume');
-        var bgmUrl = typeof window.LOADSCREEN_BGM_URL !== 'undefined' ? String(window.LOADSCREEN_BGM_URL).trim() : '';
-        if ($bgm && bgmUrl) {
+        var bgmEnabled = typeof window.LOADSCREEN_BGM_ENABLED !== 'undefined' ? window.LOADSCREEN_BGM_ENABLED : true;
+        var bgmSource = typeof window.LOADSCREEN_BGM_SOURCE !== 'undefined' ? window.LOADSCREEN_BGM_SOURCE : 3;
+        var defaultVolume = typeof window.LOADSCREEN_DEFAULT_VOLUME !== 'undefined' ? Math.max(0, Math.min(100, window.LOADSCREEN_DEFAULT_VOLUME)) : 80;
+        var bgmUrl = '';
+        var useVideoAudio = false;
+        
+        var isVideoAudioSource = bgmSource === 1 || bgmSource === 'video' || bgmSource === 'A' || bgmSource === 'a';
+        
+        if ($volumeRange) {
+            $volumeRange.value = defaultVolume;
+        }
+        
+        if (isVideoAudioSource) {
+            useVideoAudio = true;
+            if ($playBtn) {
+                $playBtn.style.opacity = '1';
+                $playBtn.style.cursor = 'pointer';
+            }
+            if ($volumeRange) {
+                $volumeRange.style.opacity = '1';
+                $volumeRange.disabled = false;
+            }
+        } else if (bgmEnabled) {
+            if (bgmSource === 2 || bgmSource === 'local' || bgmSource === 'B' || bgmSource === 'b') {
+                bgmUrl = typeof window.LOADSCREEN_BGM_LOCAL_URL !== 'undefined' ? String(window.LOADSCREEN_BGM_LOCAL_URL).trim() : '';
+            } else {
+                bgmUrl = typeof window.LOADSCREEN_BGM_URL !== 'undefined' ? String(window.LOADSCREEN_BGM_URL).trim() : '';
+            }
+        } else {
+            if ($playBtn) {
+                $playBtn.classList.remove('playing');
+                $playBtn.style.opacity = '0.5';
+                $playBtn.style.cursor = 'not-allowed';
+            }
+            if ($volumeRange) {
+                $volumeRange.style.opacity = '0.5';
+                $volumeRange.disabled = true;
+            }
+        }
+        
+        if ($bgm && bgmEnabled && bgmUrl && !useVideoAudio) {
             $bgm.src = bgmUrl;
-            if ($volumeRange) $bgm.volume = parseInt($volumeRange.value, 10) / 100;
+            $bgm.volume = defaultVolume / 100;
             $bgm.play().catch(function () {});
             $bgm.addEventListener('canplay', function () { $bgm.play().catch(function () {}); }, { once: true });
             document.addEventListener('click', function tryPlayOnce() {
@@ -366,24 +470,59 @@
                 document.removeEventListener('keydown', tryPlayOnce);
             }, { once: true });
         }
-        if ($bgm && $playBtn) {
+        
+        if ($playBtn) {
             $playBtn.addEventListener('click', function () {
-                if ($bgm.paused) {
-                    if ($bgm.src) $bgm.play().catch(function () {});
-                    $playBtn.classList.add('playing');
-                } else {
-                    $bgm.pause();
-                    $playBtn.classList.remove('playing');
+                if (!bgmEnabled && !useVideoAudio) return;
+                if (useVideoAudio && $slideVideo) {
+                    if ($slideVideo.muted) {
+                        $slideVideo.muted = false;
+                        $playBtn.classList.add('playing');
+                    } else {
+                        $slideVideo.muted = true;
+                        $playBtn.classList.remove('playing');
+                    }
+                } else if ($bgm && bgmEnabled) {
+                    if ($bgm.paused) {
+                        if ($bgm.src) $bgm.play().catch(function () {});
+                        $playBtn.classList.add('playing');
+                    } else {
+                        $bgm.pause();
+                        $playBtn.classList.remove('playing');
+                    }
                 }
             });
-            $bgm.addEventListener('play', function () { $playBtn.classList.add('playing'); });
-            $bgm.addEventListener('pause', function () { $playBtn.classList.remove('playing'); });
+            
+            if (useVideoAudio) {
+                if ($slideVideo && !$slideVideo.muted) {
+                    $playBtn.classList.add('playing');
+                }
+            } else if (bgmEnabled) {
+                if ($bgm) {
+                    $bgm.addEventListener('play', function () { $playBtn.classList.add('playing'); });
+                    $bgm.addEventListener('pause', function () { $playBtn.classList.remove('playing'); });
+                }
+            }
         }
-        if ($bgm && $volumeRange) {
+        
+        if ($volumeRange) {
             $volumeRange.addEventListener('input', function () {
-                $bgm.volume = parseInt($volumeRange.value, 10) / 100;
+                if (!bgmEnabled && !useVideoAudio) return;
+                var volume = parseInt($volumeRange.value, 10) / 100;
+                if (useVideoAudio && $slideVideo) {
+                    $slideVideo.volume = volume;
+                } else if ($bgm && bgmEnabled) {
+                    $bgm.volume = volume;
+                }
             });
-            $bgm.volume = parseInt($volumeRange.value, 10) / 100;
+            
+            var initialVolume = defaultVolume / 100;
+            if (useVideoAudio && $slideVideo) {
+                $slideVideo.volume = initialVolume;
+                $volumeRange.disabled = false;
+            } else if (bgmEnabled && $bgm) {
+                $bgm.volume = initialVolume;
+            }
         }
         document.getElementById('view-btns').addEventListener('click', function (e) {
             var btn = e.target.closest('.view-btn');
@@ -414,9 +553,9 @@
                 if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); updateLightboxContent(); return; }
                 if (e.key === 'ArrowRight') { e.preventDefault(); next(); updateLightboxContent(); return; }
             }
-            /* 主界面不响应左右键切换图片，仅自动轮播 */
+            /* Main interface does not respond to left/right keys to switch images, only auto-rotate */
         });
-        /* 触摸滑动仅在大图灯箱内生效，主界面不切换 */
+        /* Touch swipe only works in lightbox, main interface does not switch */
         var touchStartX = 0;
         document.addEventListener('touchstart', function (e) {
             touchStartX = e.touches[0].clientX;
@@ -429,7 +568,7 @@
                 updateLightboxContent();
             }
         }, { passive: true });
-        /* 鼠标点击涟漪特效 */
+        /* Mouse click ripple effect */
         (function () {
             var container = document.getElementById('click-ripples');
             if (!container) return;
@@ -454,11 +593,68 @@
         window.onmessage = onMessage;
     }
 
+    function initVideo() {
+        useVideo = typeof window.LOADSCREEN_USE_VIDEO !== 'undefined' ? window.LOADSCREEN_USE_VIDEO : false;
+        if (useVideo) {
+            const videoUrl = typeof window.LOADSCREEN_VIDEO_URL !== 'undefined' ? window.LOADSCREEN_VIDEO_URL : '';
+            let videoMuted = typeof window.LOADSCREEN_VIDEO_MUTED !== 'undefined' ? window.LOADSCREEN_VIDEO_MUTED : true;
+            const videoLoop = typeof window.LOADSCREEN_VIDEO_LOOP !== 'undefined' ? window.LOADSCREEN_VIDEO_LOOP : true;
+            const bgmSource = typeof window.LOADSCREEN_BGM_SOURCE !== 'undefined' ? window.LOADSCREEN_BGM_SOURCE : 3;
+            const defaultVolume = typeof window.LOADSCREEN_DEFAULT_VOLUME !== 'undefined' ? Math.max(0, Math.min(100, window.LOADSCREEN_DEFAULT_VOLUME)) : 80;
+            
+            if (bgmSource === 1 || bgmSource === 'video' || bgmSource === 'A' || bgmSource === 'a') {
+                videoMuted = false;
+            }
+            
+            if (videoUrl) {
+                $slideVideo.src = videoUrl;
+                $slideVideo.muted = videoMuted;
+                $slideVideo.loop = videoLoop;
+                $slideVideo.playsInline = true;
+                $slideVideo.volume = defaultVolume / 100;
+                
+                $slideVideo.addEventListener('loadedmetadata', function() {
+                    if (currentIndex === 0) {
+                        $slideVideo.currentTime = 0;
+                        $slideVideo.play().catch(function(err) {
+                            console.log('Video autoplay blocked, waiting for user interaction:', err);
+                        });
+                    }
+                });
+                
+                $slideVideo.addEventListener('canplay', function() {
+                    if (currentIndex === 0 && $slideVideo.paused) {
+                        $slideVideo.play().catch(function() {});
+                    }
+                });
+                
+                function tryPlayVideo() {
+                    if (useVideo && currentIndex === 0 && $slideVideo.paused) {
+                        $slideVideo.play().catch(function() {});
+                    }
+                }
+                
+                document.addEventListener('click', function tryPlayOnce() {
+                    tryPlayVideo();
+                }, { once: true });
+                
+                document.addEventListener('keydown', function tryPlayOnce() {
+                    tryPlayVideo();
+                }, { once: true });
+                
+                document.addEventListener('touchstart', function tryPlayOnce() {
+                    tryPlayVideo();
+                }, { once: true });
+            }
+        }
+    }
+
     function init() {
         updateProgress(0);
         setTipText(0);
         startTipRotate();
         bindEvents();
+        initVideo();
         discoverImages().then(function (list) {
             imageList = list;
             buildSlides();

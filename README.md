@@ -2,25 +2,36 @@
 
 ---
 
-# TEA-LoadScreen — Image Carousel Loading Screen
+# TEA-LoadScreen — Image/Video Carousel Loading Screen
 
-FiveM loading screen: **auto-detects** images in the `images` folder and runs a carousel, **supports many images** (up to 80), **click to view fullscreen**, with rich interaction.
+[![Version](https://img.shields.io/badge/version-2.1.3-blue.svg)](fxmanifest.lua)
+[![License](https://img.shields.io/badge/license-GPL--3.0-green.svg)](LICENSE)
+[![Game](https://img.shields.io/badge/game-FiveM-orange.svg)](https://fivem.net/)
 
-## Features
+> FiveM loading screen: **auto-detects** images in the `images` folder and runs a carousel, **supports video backgrounds**, **multiple audio sources**, with rich interaction.
 
-- **Many images**: Up to **80 images**, **mixed formats**: name each by number (`1`, `2`, `3`…). Extension can be **jpg / jpeg / png / webp / gif / bmp**, e.g. `1.jpg`, `2.png`, `3.png`, `4.jpg`, `5.webp`. For each number only the first existing format is used; order is 1, 2, 3…
-- **Fullscreen view**: **Click the current slide** to open fullscreen; use ←/→ or tap to switch, Esc or click background to close. Fullscreen also supports ←/→ and touch swipe.
-- **Rich interaction**:
-  - **← / →** keys: previous / next image
-  - **Left/right buttons**: switch slides
-  - **Bottom dots**: jump to that slide (dots scroll when there are many)
-  - **Touch swipe** left/right (mobile)
-- **Loading progress**: Bottom progress bar is synced with FiveM `loadProgress`, showing load percentage.
-- **Bottom tip line**: One line of text below the progress bar (e.g. “Connecting to server…”) for status or slogans; **multiple tips** can be set and rotated during load (see “Custom tips” below).
+## ✨ Features
 
-## Installation
+### Core Features
+- 🎬 **Video Background**: Support using video as the first slide
+- 🖼️ **Many Images**: Up to **80 images**, **mixed formats**
+- 🔍 **Fullscreen View**: Click current slide to open fullscreen lightbox
+- 🎵 **Multiple Audio Sources**: Support video audio, local files, external URLs
+- 🎛️ **Volume Control**: Configurable default volume, real-time adjustment
+- 📊 **Loading Progress**: Bottom progress bar synced with FiveM `loadProgress`
+- 💬 **Custom Tips**: Multiple rotating tips, supports bilingual (Chinese/English)
+- 🏷️ **Logo Toggle**: Control server logo display in top-left corner
 
-1. Put the whole `TEA-LoadScreen` folder under `resources` (avoid spaces in path, e.g. use `TEA-LoadScreen`).
+### Interaction Methods
+- ⌨️ **← / →** keys: previous / next image
+- 👆 **Left/right buttons**: switch slides
+- ⚫ **Bottom dots**: jump to specific slide
+- 📱 **Touch swipe** left/right (mobile)
+- 🔇 **Mini player** to control play/pause and volume
+
+## 📦 Installation
+
+1. Put the whole `TEA-LoadScreen` folder under `resources`
 2. In `server.cfg`, use **only one** loadscreen resource:
    ```cfg
    loadscreen 'TEA-LoadScreen'
@@ -29,76 +40,166 @@ FiveM loading screen: **auto-detects** images in the `images` folder and runs a 
    ```cfg
    loadscreen 'your_folder/TEA-LoadScreen'
    ```
-3. Add your images in the `images` folder, named `1.jpg`, `2.jpg`, … or `1.png`, `2.png`, …
+3. Add your media files (see instructions below)
 
-## Image Naming
+## 🎬 Video Configuration
 
-- **Numbered names**: `1`, `2`, `3`… up to `80`; any of the supported extensions.
-- **Mixed formats**: You can have `1.jpg`, `2.png`, `3.png`, `4.jpg`, `5.webp` etc. in the same folder. For each number the **first existing format** is used (order: jpg → jpeg → png → webp → gif → bmp); order is by number.
+### Enable Video
+Set in `config.js`:
+```javascript
+window.LOADSCREEN_USE_VIDEO = true;
+window.LOADSCREEN_VIDEO_URL = 'videos/intro.mp4';
+window.LOADSCREEN_VIDEO_MUTED = false;  // Muted or not
+window.LOADSCREEN_VIDEO_LOOP = true;    // Loop or not
+```
 
-| Format   | Example       | Note |
-|----------|---------------|------|
-| jpg/jpeg | 1.jpg, 2.jpg  | Listed in manifest |
-| png      | 1.png, 2.png  | Listed in manifest |
-| webp     | 1.webp, 2.webp | Listed in manifest |
-| gif      | 1.gif, 2.gif  | Listed in manifest |
-| bmp      | 1.bmp, 2.bmp  | Listed in manifest |
+### Supported Video Formats
+- `.mp4` (recommended)
+- `.webm`
+- `.ogg`
 
-`fxmanifest.lua` already lists 1–80 for jpg, png, webp, gif, bmp. For custom names (e.g. `banner_01.png`), add the path in `files` manually.
+> Place video files in `videos/` folder
 
-## Custom Tips (Bottom Tip Line)
+## 🖼️ Image Configuration
 
-The line under the progress bar (e.g. “Connecting to server…”) can be multiple tips; they rotate during load and change about every 4 seconds.
+### Usage Methods
 
-**Option 1 (recommended)** — Edit **`config.js`** and set the `window.LOADSCREEN_TIPS` array:
+**Method 1: Auto Numbering (Simplest)**
+- Name images as `1.jpg`, `2.jpg`, `3.jpg`… or `1.png`, `2.png`…
+- System will automatically load images 1~80 in order
+
+**Method 2: Config File Specification**
+```javascript
+window.LOADSCREEN_IMAGE_NAMES = ['logo', 'bg', 'intro'];
+```
+
+**Method 3: Using list.txt**
+- Create `list.txt` in `images/` folder
+- Write one image path per line
+
+### Supported Image Formats
+| Format | Example | Note |
+|--------|---------|------|
+| jpg/jpeg | 1.jpg, 2.jpg | Listed in manifest |
+| png | 1.png, 2.png | Listed in manifest |
+| webp | 1.webp, 2.webp | Listed in manifest |
+| gif | 1.gif, 2.gif | Listed in manifest |
+| bmp | 1.bmp, 2.bmp | Listed in manifest |
+
+> Place image files in `images/` folder
+
+## 🎵 Audio Configuration
+
+### Audio Source Types
+Choose audio source in `config.js`:
+```javascript
+window.LOADSCREEN_BGM_SOURCE = 1;  // 1=video audio, 2=local file, 3=external URL
+```
+
+#### 1. Use Video Audio
+```javascript
+window.LOADSCREEN_BGM_SOURCE = 1;
+window.LOADSCREEN_USE_VIDEO = true;  // Ensure video is enabled
+```
+
+#### 2. Use Local Audio File
+```javascript
+window.LOADSCREEN_BGM_SOURCE = 2;
+window.LOADSCREEN_BGM_LOCAL_URL = 'audio/bgm.mp3';
+```
+
+#### 3. Use External URL
+```javascript
+window.LOADSCREEN_BGM_SOURCE = 3;
+window.LOADSCREEN_BGM_URL = 'http://example.com/music.mp3';
+```
+
+### Volume Configuration
+```javascript
+window.LOADSCREEN_DEFAULT_VOLUME = 80;  // 0-100
+```
+
+### Supported Audio Formats
+- `.mp3` (recommended)
+- `.wav`
+- `.ogg`
+
+> Place audio files in `audio/` folder
+
+## 🏷️ Logo Configuration
+
+```javascript
+window.LOADSCREEN_LOGO_ENABLED = true;  // Show/hide logo
+window.LOADSCREEN_LOGO_URL = 'images/logo.png';
+```
+
+## 💬 Custom Tips
+
+Modify the tips array in `config.js`:
 
 ```javascript
 window.LOADSCREEN_TIPS = [
     'Connecting to server…',
     'Loading resources, please wait',
     'Entering game soon',
-    'Welcome to the server',
+    ['Welcome to our server', '欢迎来到本服'],  // Bilingual format
     'Your other tips…'
 ];
 ```
 
-**Option 2** — In `index.html`, before `script.js`, add:
-
-```html
-<script>window.LOADSCREEN_TIPS = ['Tip 1','Tip 2','Tip 3'];</script>
-```
-
-## Bottom Mini Player
-
-The **left side** of the bottom bar is a mini player: **play/pause** and **volume**, with a glassmorphism + purple-blue gradient style.  
-Background music uses an **external URL**: in **`config.js`** set `window.LOADSCREEN_BGM_URL = 'https://your-domain-or-cdn/xxx.mp3'`. Leave empty to disable. No local file required.
-
-## Optional Config
-
-- **Slide interval**: In `script.js` top, change `AUTO_INTERVAL` (milliseconds), default 5500.
-- **Tip rotation interval**: In `script.js` top, change `TIP_ROTATE_INTERVAL` (milliseconds), default 4000.
-- **Hide default loading spinner**: In `server.cfg` add:
-  ```cfg
-  setr sv_showBusySpinnerOnLoadingScreen false
-  ```
-
-## File Structure
+## 📂 File Structure
 
 ```
 TEA-LoadScreen/
 ├── fxmanifest.lua
 ├── index.html
 ├── style.css
-├── config.js   ← edit for tips & BGM
+├── config.js          ← Main configuration file
 ├── script.js
 ├── images/
+│   ├── Please place images here.txt
+│   ├── 请将图片放于此文件夹.txt
+│   ├── logo.png
 │   ├── 1.jpg
 │   ├── 2.jpg
+│   └── …
+├── videos/
+│   ├── Please place video files here.txt
+│   ├── 请将视频放于此文件夹.txt
+│   ├── intro.mp4
+│   └── …
+├── audio/
+│   ├── Please place audio files here.txt
+│   ├── 请将音频放于此文件夹.txt
+│   ├── bgm.mp3
 │   └── …
 ├── README.md
 └── README_zh.md
 ```
 
-## Requirements
+## ⚙️ Advanced Configuration
 
-- FiveM client; no other dependencies.
+Adjust at the top of `script.js`:
+
+| Config | Description | Default |
+|--------|-------------|---------|
+| `AUTO_INTERVAL` | Auto-slide interval (ms) | 5500 |
+| `TIP_ROTATE_INTERVAL` | Tip rotation interval (ms) | 3000 |
+
+### Hide Default Loading Spinner
+Add to `server.cfg`:
+```cfg
+setr sv_showBusySpinnerOnLoadingScreen false
+```
+
+## 📋 Requirements
+
+- FiveM client; no other dependencies
+
+## 📄 License
+
+This project is licensed under GPL-3.0 - see [LICENSE](LICENSE) file for details
+
+---
+
+**Version: 2.1.3** | **Author: TEA**

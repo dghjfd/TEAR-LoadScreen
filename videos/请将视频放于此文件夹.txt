@@ -1,0 +1,18 @@
+请将您的视频文件放置于此文件夹
+
+支持的视频格式：
+- .mp4 (推荐)
+- .webm
+- .ogg
+
+使用说明：
+1. 将您的视频文件放入此文件夹（例如：intro.mp4）
+2. 打开 config.js 文件进行配置
+3. 将 LOADSCREEN_USE_VIDEO 设置为 true
+4. 将 LOADSCREEN_VIDEO_URL 设置为您的视频路径（例如：'videos/intro.mp4'）
+5. 根据需要调整其他视频相关配置
+
+注意：
+- 视频文件大小建议控制在合理范围内，以确保加载速度
+- 如果视频有声音，浏览器可能需要用户交互后才能播放声音
+- 建议使用静音模式（LOOPSCREEN_VIDEO_MUTED = true）以获得最佳用户体验

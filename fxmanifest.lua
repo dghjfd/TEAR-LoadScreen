@@ -1,22 +1,22 @@
 --[[
-    TEA-LoadScreen - 自动识别图片 + 高交互加载屏
-    - images/ 下按后缀自动识别，不写数字；支持 list.txt 或配置指定顺序
-    - 键盘/点击/进度条/触摸滑动
+    TEA-LoadScreen - Auto-detect images + high-interaction loadscreen
+    - Auto-detect images in images/ by extension, no numbers needed; supports list.txt or config-specified order
+    - Keyboard/click/progress bar/touch swipe
 ]]
 
 fx_version 'cerulean'
 game 'gta5'
 
-author 'TEA'
-description 'FiveM 加载屏：图片轮播，支持大窗查看'
-version '1.2.0'
+author 'TEAR'
+description 'FiveM loadscreen: image carousel with lightbox viewing'
+version '2.1.3'
 
 loadscreen 'index.html'
 loadscreen_cursor 'yes'
 loadscreen_manual_shutdown 'no'
 
--- 固定文件 + images 下按后缀通配（不写数字，自动识别 png/jpg/jpeg/webp/gif/bmp）
--- 使用 list.txt 时在 files 中增加 'images/list.txt'
+-- Fixed files + wildcard by extension in images folder (no numbers needed, auto-detect png/jpg/jpeg/webp/gif/bmp)
+-- When using list.txt, add 'images/list.txt' to files
 files {
     'index.html',
     'style.css',
@@ -27,5 +27,11 @@ files {
     'images/*.jpeg',
     'images/*.webp',
     'images/*.gif',
-    'images/*.bmp'
+    'images/*.bmp',
+    'videos/*.mp4',
+    'videos/*.webm',
+    'videos/*.ogg',
+    'audio/*.mp3',
+    'audio/*.wav',
+    'audio/*.ogg'
 }

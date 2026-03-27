@@ -17,7 +17,10 @@
             <img id="server-logo" class="server-logo" src="" alt="服务器标识">
         </div>
         <!-- 轮播层 -->
-        <div id="slides" class="slides"></div>
+        <div id="slides" class="slides">
+            <video id="slide-video" class="slide-video" playsinline></video>
+            <div class="slide-video-overlay" aria-hidden="true"></div>
+        </div>
 
         <!-- 左右切换热区 -->
         <button type="button" id="prev" class="nav-btn nav-prev" aria-label="上一张">‹</button>
@@ -34,7 +37,7 @@
                     </button>
                     <div class="player-volume">
                         <span class="player-volume-icon" aria-hidden="true"></span>
-                        <input type="range" id="player-volume" class="player-volume-range" min="0" max="100" value="10" aria-label="音量">
+                        <input type="range" id="player-volume" class="player-volume-range" min="0" max="100" value="80" aria-label="音量">
                     </div>
                 </div>
             </div>

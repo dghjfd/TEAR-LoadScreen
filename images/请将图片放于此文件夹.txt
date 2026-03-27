@@ -1,10 +1,31 @@
-请将轮播图片放在本文件夹内，按数字命名（1～80），扩展名可混用：
+请将您的图片文件放置于此文件夹
 
-  示例：1.jpg、2.png、3.png、4.jpg、5.webp、6.gif …
-  支持格式：jpg / jpeg / png / webp / gif / bmp
+支持的图片格式：
+- .jpg / .jpeg (推荐)
+- .png
+- .webp
+- .gif
+- .bmp
 
-每个数字只取第一个存在的文件（检测顺序：jpg → jpeg → png → webp → gif → bmp），
-按 1、2、3… 顺序轮播。点击图片可进入大窗全屏查看。
+使用方法：
 
-注意：fxmanifest.lua 已预列 1～80 的 jpg、png、webp、gif、bmp；
-若使用其他文件名（如 banner_01.png），需在 fxmanifest.lua 的 files 里添加路径。
+方法一：自动编号（最简单）
+- 将图片命名为 1.jpg, 2.jpg, 3.jpg... 或 1.png, 2.png...
+- 系统会自动按顺序加载 1~80 号图片
+
+方法二：配置文件指定
+- 在 config.js 中设置 LOADSCREEN_IMAGE_NAMES，例如：
+  window.LOADSCREEN_IMAGE_NAMES = ['logo', 'bg', 'intro'];
+- 将对应的图片放入此文件夹（无需后缀）
+- 系统会自动识别支持的格式
+
+方法三：使用 list.txt
+- 在 images 文件夹中创建 list.txt
+- 每行写一个图片路径，例如：
+  logo.png
+  images/bg.jpg
+- 系统会按 list.txt 中的顺序加载
+
+注意：
+- logo.png 用于左上角服务器 LOGO（在 config.js 中配置）
+- 建议使用适当大小的图片以确保加载速度

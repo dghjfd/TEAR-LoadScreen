@@ -1,0 +1,18 @@
+请将您的音频文件放置于此文件夹
+
+支持的音频格式：
+- .mp3 (推荐)
+- .wav
+- .ogg
+
+使用说明：
+1. 将您的音频文件放入此文件夹（例如：bgm.mp3）
+2. 打开 config.js 文件进行配置
+3. 将 LOADSCREEN_BGM_SOURCE 设置为 2（或 'local' 或 'B'）
+4. 将 LOADSCREEN_BGM_LOCAL_URL 设置为您的音频路径（例如：'audio/bgm.mp3'）
+5. 确保 LOADSCREEN_BGM_ENABLED 设置为 true
+
+音频来源选项：
+- 1 或 'video' 或 'A' - 使用视频的音频（仅在启用视频时有效）
+- 2 或 'local' 或 'B' - 使用本地音频文件
+- 3 或 'url' 或 'C' - 使用外部链接（默认）

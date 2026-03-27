@@ -1,0 +1,31 @@
+Please place your image files in this folder
+
+Supported image formats:
+- .jpg / .jpeg (recommended)
+- .png
+- .webp
+- .gif
+- .bmp
+
+Usage:
+
+Method 1: Auto numbering (simplest)
+- Name images as 1.jpg, 2.jpg, 3.jpg... or 1.png, 2.png...
+- System will automatically load images 1~80 in order
+
+Method 2: Config file specification
+- Set LOADSCREEN_IMAGE_NAMES in config.js, e.g.:
+  window.LOADSCREEN_IMAGE_NAMES = ['logo', 'bg', 'intro'];
+- Place corresponding images in this folder (no extension needed)
+- System will auto-detect supported formats
+
+Method 3: Using list.txt
+- Create list.txt in images folder
+- Write one image path per line, e.g.:
+  logo.png
+  images/bg.jpg
+- System will load in the order from list.txt
+
+Note:
+- logo.png is for top-left server logo (configurable in config.js)
+- Recommend using appropriately sized images for loading speed
