@@ -12,8 +12,9 @@ local VALIDATION = {
     AUTHOR_NAME = "TEAR",
     GITHUB_REPO = "https://api.github.com/repos/TEAR-Official/TEAR-LoadScreen/releases/latest",
     GITHUB_API = "https://api.github.com/repos/TEAR-Official/TEAR-LoadScreen",
-    REQUIRED_VERSION = "2.2.1",
-    ENCRYPTION_KEY = nil
+    REQUIRED_VERSION = "2.2.3",
+    ENCRYPTION_KEY = nil,
+    INITIALIZED = false
 }
 
 local MEDIA_EXTENSIONS = {
@@ -28,8 +29,10 @@ local C = {
     YELLOW = "^3",
     BLUE = "^4",
     CYAN = "^5",
+    MAGENTA = "^6",
     WHITE = "^7",
     GREY = "^8",
+    ORANGE = "^9",
     RESET = "^0"
 }
 
@@ -48,7 +51,8 @@ local function encrypt_data(data, key)
     for i = 1, #data do
         local char = string.byte(data, i)
         local key_char = string.byte(key, (i - 1) % #key + 1)
-        local xor_val = bit.bxor(char, key_char)
+        local xor_val = char ~ key_char
+        xor_val = (xor_val &gt;= 0 and xor_val &lt;= 255) and xor_val or (xor_val % 256)
         encrypted[i] = string.char(xor_val)
     end
     return table.concat(encrypted)
@@ -157,7 +161,7 @@ local function fetch_url(url)
         end, "GET", "", {
             ["Content-Type"] = "application/json",
             ["Accept"] = "application/json",
-            ["User-Agent"] = "TEAR-LoadScreen-Validator/2.2.1"
+            ["User-Agent"] = "TEAR-LoadScreen-Validator/2.2.3"
         })
     end
     return result, status
