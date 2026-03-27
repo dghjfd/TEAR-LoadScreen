@@ -646,6 +646,34 @@
             $videoModeBtn = $modeBtns.querySelector('[data-mode="video"]');
             $imageModeBtn = $modeBtns.querySelector('[data-mode="image"]');
             
+            // 图标元素
+            var $iconVideo = document.getElementById('icon-video');
+            var $iconImage = document.getElementById('icon-image');
+            var $iconVideoInactive = document.getElementById('icon-video-inactive');
+            var $iconImageActive = document.getElementById('icon-image-active');
+            
+            // 初始化图标显示状态
+            function updateModeIcons() {
+                if (displayMode === 'video') {
+                    // 视频模式按钮显示播放图标
+                    if ($iconVideo) $iconVideo.style.display = 'block';
+                    if ($iconImage) $iconImage.style.display = 'none';
+                    // 图片模式按钮显示相机图标（非激活）
+                    if ($iconVideoInactive) $iconVideoInactive.style.display = 'none';
+                    if ($iconImageActive) $iconImageActive.style.display = 'block';
+                } else {
+                    // 视频模式按钮显示相机图标
+                    if ($iconVideo) $iconVideo.style.display = 'none';
+                    if ($iconImage) $iconImage.style.display = 'block';
+                    // 图片模式按钮显示相机图标（激活）
+                    if ($iconVideoInactive) $iconVideoInactive.style.display = 'block';
+                    if ($iconImageActive) $iconImageActive.style.display = 'none';
+                }
+            }
+            
+            // 初始更新图标
+            updateModeIcons();
+            
             $modeBtns.addEventListener('click', function (e) {
                 var btn = e.target.closest('.view-btn');
                 if (!btn || btn.dataset.mode === undefined) return;
@@ -669,6 +697,9 @@
                 }
                 
                 console.log('[TEAR-LoadScreen] 显示模式切换为:', displayMode, 'useVideo:', useVideo);
+                
+                // 更新图标显示
+                updateModeIcons();
                 
                 // 重新构建幻灯片
                 buildSlides();
