@@ -405,6 +405,7 @@ html, body {
     z-index: 15;
     display: flex;
     align-items: center;
+    gap: 8px;
     padding: 4px;
     background: rgba(0,0,0,0.45);
     border-radius: 12px;
@@ -416,6 +417,11 @@ html, body {
 .view-bar:hover {
     background: rgba(0,0,0,0.55);
     box-shadow: 0 4px 24px rgba(0,0,0,0.25);
+}
+.view-bar-modes {
+    display: flex;
+    align-items: center;
+    gap: 2px;
 }
 .view-bar-views {
     display: flex;
@@ -435,6 +441,12 @@ html, body {
     justify-content: center;
     border-radius: 8px;
     transition: background var(--dur-normal) var(--ease-out-smooth), color var(--dur-normal) var(--ease-out-smooth), transform var(--dur-fast) var(--ease-out-expo);
+}
+.view-btn svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+    stroke: currentColor;
 }
 .view-btn:hover {
     background: rgba(255,255,255,0.08);
