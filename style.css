@@ -445,8 +445,15 @@ html, body {
 .view-btn svg {
     width: 20px;
     height: 20px;
-    fill: currentColor;
+    display: block;
+}
+.view-btn svg[fill="none"] {
+    fill: none;
     stroke: currentColor;
+}
+.view-btn svg polygon[fill="currentColor"] {
+    fill: currentColor;
+    stroke: none;
 }
 .view-btn:hover {
     background: rgba(255,255,255,0.08);

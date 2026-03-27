@@ -890,17 +890,16 @@
         // 检查是否启用视频模式，决定是否显示模式切换按钮
         var videoEnabled = typeof window.LOADSCREEN_USE_VIDEO !== 'undefined' && window.LOADSCREEN_USE_VIDEO;
         var hasImages = typeof window.LOADSCREEN_IMAGE_NAMES !== 'undefined' || 
-                       typeof window.LOADSCREEN_IMAGE_LIST_URL !== 'undefined' || 
-                       imageList.length > 0;
+                       typeof window.LOADSCREEN_IMAGE_LIST_URL !== 'undefined';
         
         $modeBtns = document.getElementById('mode-btns');
         if ($modeBtns && videoEnabled && hasImages) {
             $modeBtns.style.display = 'flex';
             displayMode = 'video';
-            console.log('[TEAR-LoadScreen] 显示模式切换按钮已启用');
+            console.log('[TEAR-LoadScreen] 显示模式切换按钮已启用（配置检测）');
         } else if ($modeBtns) {
             $modeBtns.style.display = 'none';
-            console.log('[TEAR-LoadScreen] 显示模式切换按钮已隐藏（只有视频或只有图片）');
+            console.log('[TEAR-LoadScreen] 显示模式切换按钮已隐藏（配置检测）');
         }
         
         updateProgress(0);
@@ -915,6 +914,16 @@
         discoverImages().then(function (list) {
             console.log('[TEAR-LoadScreen] 图片加载完成，数量:', list.length);
             imageList = list;
+            
+            // 图片加载完成后再次检查是否显示模式按钮
+            if ($modeBtns && videoEnabled && list.length > 0) {
+                $modeBtns.style.display = 'flex';
+                console.log('[TEAR-LoadScreen] 显示模式切换按钮已启用（图片加载完成）');
+            } else if ($modeBtns && list.length === 0) {
+                $modeBtns.style.display = 'none';
+                console.log('[TEAR-LoadScreen] 显示模式切换按钮已隐藏（无图片）');
+            }
+            
             buildSlides();
             buildDots();
             applyViewMode();
@@ -922,6 +931,13 @@
         }).catch(function(err) {
             console.error('[TEAR-LoadScreen] 图片加载失败:', err);
             imageList = [];
+            
+            // 图片加载失败后隐藏按钮
+            if ($modeBtns) {
+                $modeBtns.style.display = 'none';
+                console.log('[TEAR-LoadScreen] 显示模式切换按钮已隐藏（加载失败）');
+            }
+            
             buildSlides();
             buildDots();
             applyViewMode();
