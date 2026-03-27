@@ -22,18 +22,15 @@ local VALIDATION = {
     这些文件是用户自定义的展示内容
 ]]
 local MEDIA_EXTENSIONS = {
-    -- 图片
     ['.png'] = true,
     ['.jpg'] = true,
     ['.jpeg'] = true,
     ['.gif'] = true,
     ['.webp'] = true,
     ['.bmp'] = true,
-    -- 音频
     ['.mp3'] = true,
     ['.wav'] = true,
     ['.ogg'] = true,
-    -- 视频
     ['.mp4'] = true,
     ['.webm'] = true,
     ['.avi'] = true,
@@ -42,8 +39,6 @@ local MEDIA_EXTENSIONS = {
 
 --[[
     检查文件是否为媒体文件
-    @param filename 文件名
-    @return true 如果是媒体文件
 ]]
 local function is_media_file(filename)
     if not filename then return false end
@@ -58,10 +53,6 @@ end
 
 --[[
     解密数据
-    使用 XOR 加密算法
-    @param encrypted 加密后的字符串
-    @param key 解密密钥
-    @return 解密后的字符串，失败返回 nil
 ]]
 local function decrypt_data(encrypted, key)
     if not encrypted or not key then return nil end
@@ -78,10 +69,6 @@ end
 
 --[[
     加密数据
-    使用 XOR 加密算法
-    @param data 原始数据
-    @param key 加密密钥
-    @return 加密后的字符串，失败返回 nil
 ]]
 local function encrypt_data(data, key)
     if not data or not key then return nil end
@@ -98,8 +85,6 @@ end
 
 --[[
     生成验证密钥
-    基于资源名称生成唯一的验证密钥
-    @return 16字节的验证密钥字符串
 ]]
 local function generate_validation_key()
     local source = GetCurrentResourceName() .. "TEAR-LoadScreen-SecureKey-2024"
@@ -116,8 +101,6 @@ end
 
 --[[
     验证资源名称
-    检查当前资源名称是否与预期名称匹配
-    @return 验证结果和消息
 ]]
 local function validate_resource_name()
     local current_name = GetCurrentResourceName()
@@ -136,9 +119,6 @@ end
 
 --[[
     验证作者名称
-    检查 fxmanifest.lua 中的作者名称是否正确
-    @param author_from_manifest 从 manifest 获取的作者名称
-    @return 验证结果和消息
 ]]
 local function validate_author_name(author_from_manifest)
     local expected_author = VALIDATION.AUTHOR_NAME
@@ -160,10 +140,6 @@ end
 
 --[[
     验证版本号
-    检查客户端版本是否满足最低版本要求
-    @param client_version 客户端版本号
-    @param client_hash 客户端哈希值（可选）
-    @return 验证结果和消息
 ]]
 local function validate_version(client_version, client_hash)
     local required = VALIDATION.REQUIRED_VERSION
@@ -199,19 +175,19 @@ end
 
 --[[
     验证状态管理
-    存储当前验证状态和错误信息
 ]]
 local VALIDATION_STATE = {
     PASSED = false,
     ERRORS = {},
     SUSPICIOUS = {},
-    INITIALIZED = false
+    INITIALIZED = false,
+    VERSION_OUTDATED = false,
+    LATEST_VERSION = nil,
+    UPDATE_INFO = nil
 }
 
 --[[
     添加错误信息
-    将错误信息添加到状态数组并打印
-    @param error_msg 错误信息
 ]]
 local function add_error(error_msg)
     table.insert(VALIDATION_STATE.ERRORS, error_msg)
@@ -220,7 +196,6 @@ end
 
 --[[
     添加疑似修改信息
-    @param file_info 文件信息
 ]]
 local function add_suspicious(file_info)
     table.insert(VALIDATION_STATE.SUSPICIOUS, file_info)
@@ -233,26 +208,15 @@ end
 local function clear_errors()
     VALIDATION_STATE.ERRORS = {}
     VALIDATION_STATE.SUSPICIOUS = {}
-end
-
---[[
-    检查验证是否通过
-    @return 验证状态
-]]
-local function is_validation_passed()
-    return VALIDATION_STATE.PASSED
+    VALIDATION_STATE.VERSION_OUTDATED = false
+    VALIDATION_STATE.LATEST_VERSION = nil
+    VALIDATION_STATE.UPDATE_INFO = nil
 end
 
 --[[
     从 URL 获取内容
-    @param url 目标 URL
-    @return 响应内容，失败返回 nil
 ]]
 local function fetch_url(url)
-    local perform = http_request or PerformHttpRequest or function(url, method, body, headers, callback)
-        PerformHttpRequest(url, callback, method, body or "", headers or {})
-    end
-
     local result, status = nil, 0
 
     if PerformHttpRequest then
@@ -272,16 +236,40 @@ local function fetch_url(url)
 end
 
 --[[
+    获取 GitHub 最新版本信息
+]]
+local function get_github_latest_version()
+    local url = VALIDATION.GITHUB_REPO
+    local result, status = fetch_url(url)
+
+    if not result or status ~= 200 then
+        return nil
+    end
+
+    local success, data = pcall(json.decode, result)
+    if not success or not data then
+        return nil
+    end
+
+    local version = data.tag_name and data.tag_name:gsub("^v", "") or data.name
+    local body = data.body or ""
+    local download_url = data.html_url or ""
+
+    return {
+        version = version,
+        body = body,
+        url = download_url
+    }
+end
+
+--[[
     获取 GitHub 仓库中的文件列表
-    使用 GitHub Trees API 获取整个仓库结构
-    @return 文件路径数组，失败返回 nil
 ]]
 local function get_github_file_tree()
     local url = VALIDATION.GITHUB_API .. "/git/trees/main?recursive=1"
     local result, status = fetch_url(url)
 
     if not result or status ~= 200 then
-        -- 尝试 master 分支
         url = VALIDATION.GITHUB_API .. "/git/trees/master?recursive=1"
         result, status = fetch_url(url)
     end
@@ -309,8 +297,6 @@ end
 
 --[[
     检查本地文件是否存在
-    @param filepath 文件路径
-    @return true 如果文件存在
 ]]
 local function local_file_exists(filepath)
     local path = LoadResourceFile(GetCurrentResourceName(), filepath)
@@ -319,9 +305,6 @@ end
 
 --[[
     对比 GitHub 文件列表与本地文件
-    排除媒体文件（图片、音频、视频）
-    标记缺失或多余的疑似修改文件
-    @return 对比结果表
 ]]
 local function compare_files_with_github()
     print("[TEAR-LoadScreen] 正在获取 GitHub 仓库文件列表...")
@@ -343,17 +326,14 @@ local function compare_files_with_github()
         modified_suspicious = {}
     }
 
-    -- 创建 GitHub 文件映射（用于快速查找）
     local github_map = {}
     for _, f in ipairs(github_files) do
         github_map[f] = true
     end
 
-    -- 遍历 GitHub 文件列表
     for _, filepath in ipairs(github_files) do
         result.total = result.total + 1
 
-        -- 跳过媒体文件
         local filename = filepath
         local ext = string.match(filename, "%.[^.]+$") or ""
         if is_media_file(ext) or is_media_file(filename) then
@@ -361,7 +341,6 @@ local function compare_files_with_github()
         else
             result.checked = result.checked + 1
 
-            -- 检查本地是否存在
             if not local_file_exists(filepath) then
                 table.insert(result.missing, filepath)
                 add_suspicious("文件缺失: " .. filepath)
@@ -369,7 +348,6 @@ local function compare_files_with_github()
         end
     end
 
-    -- 获取 fxmanifest.lua 中定义的所有文件进行交叉验证
     local manifest_files = {
         'index.html',
         'style.css',
@@ -381,10 +359,7 @@ local function compare_files_with_github()
         'fxmanifest.lua'
     }
 
-    -- 扩展名模式（用于检测媒体文件）
-    local media_patterns = {
-        'images/', 'videos/', 'audio/'
-    }
+    local media_patterns = { 'images/', 'videos/', 'audio/' }
 
     local function is_media_path(path)
         for _, pattern in ipairs(media_patterns) do
@@ -395,18 +370,11 @@ local function compare_files_with_github()
         return is_media_file(path)
     end
 
-    -- 检查本地多余文件（检查非媒体文件的）
-    local resourceName = GetCurrentResourceName()
-
-    -- 资源目录下的所有文件
     local all_local_files = {}
-
-    -- 基于 manifest 定义的文件进行交叉检查
     for _, filepath in ipairs(manifest_files) do
         all_local_files[filepath] = true
     end
 
-    -- 检查本地文件是否在 GitHub 上存在（排除媒体文件）
     for filepath, _ in pairs(all_local_files) do
         if not is_media_path(filepath) and not github_map[filepath] then
             table.insert(result.extra, filepath)
@@ -418,24 +386,154 @@ local function compare_files_with_github()
 end
 
 --[[
+    打印 ASCII 艺术字标题
+]]
+local function print_ascii_header()
+    local resourceName = GetCurrentResourceName()
+    print("")
+    print("[script:" .. resourceName .. "]  _______  _______  _______  _______     ____   ____  _______ ")
+    print("[script:" .. resourceName .. "] |  ____||  ____||  ____||  ____ \\   |  __ \\ / __||  ____|")
+    print("[script:" .. resourceName .. "] | |     | |     | |     | |__) |   | |__) || |   | |")
+    print("[script:" .. resourceName .. "] | |     | |     | |     |  _  /    |  _  / | |   | |")
+    print("[script:" .. resourceName .. "] | |____ | |____ | |____ | | \\ \\   | | \\ \\ | |___| |____")
+    print("[script:" .. resourceName .. "] |______||______||______||_|  \\_\\  |_|  \\_\\|______||______|")
+    print("[script:" .. resourceName .. "]")
+    print("[script:" .. resourceName .. "]    TEAR-LoadScreen v" .. VALIDATION.REQUIRED_VERSION)
+    print("[script:" .. resourceName .. "]    Protected by TEAR Validation System")
+    print("[script:" .. resourceName .. "]")
+end
+
+--[[
+    打印版本更新日志（仅过时版本）
+]]
+local function print_update_info()
+    if not VALIDATION_STATE.VERSION_OUTDATED then
+        return
+    end
+
+    local info = VALIDATION_STATE.UPDATE_INFO
+    if not info or not info.body or info.body == "" then
+        return
+    end
+
+    print("[script:" .. GetCurrentResourceName() .. "]")
+    print("[script:" .. GetCurrentResourceName() .. "]  ========== 版本更新日志 ==========")
+    print("[script:" .. GetCurrentResourceName() .. "]  最新版本: v" .. (info.version or "未知"))
+    print("[script:" .. GetCurrentResourceName() .. "]  下载地址: " .. (info.url or "未知"))
+    print("[script:" .. GetCurrentResourceName() .. "]")
+    print("[script:" .. GetCurrentResourceName() .. "]  更新内容:")
+    print("[script:" .. GetCurrentResourceName() .. "]  -----------------------------------------")
+
+    local lines = {}
+    for line in string.gmatch(info.body, "[^\r\n]+") do
+        line = line:gsub("^%s*(.-)%s*$", "%1")
+        if line ~= "" and line ~= " " then
+            table.insert(lines, line)
+        end
+    end
+
+    for i, line in ipairs(lines) do
+        if i <= 10 then
+            local display_line = line
+            if #display_line > 50 then
+                display_line = display_line:sub(1, 47) .. "..."
+            end
+            print("[script:" .. GetCurrentResourceName() .. "]    " .. display_line)
+        end
+    end
+
+    if #lines > 10 then
+        print("[script:" .. GetCurrentResourceName() .. "]    ... (更多内容请查看 GitHub)")
+    end
+
+    print("[script:" .. GetCurrentResourceName() .. "]  =========================================")
+    print("[script:" .. GetCurrentResourceName() .. "]")
+end
+
+--[[
+    打印验证结果
+]]
+local function print_validation_result()
+    local resourceName = GetCurrentResourceName()
+
+    if #VALIDATION_STATE.ERRORS > 0 then
+        print("[script:" .. resourceName .. "]")
+        print("[script:" .. resourceName .. "]  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+        print("[script:" .. resourceName .. "]       验证失败 - 资源已禁用")
+        print("[script:" .. resourceName .. "]  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+        print("[script:" .. resourceName .. "]")
+        print("[script:" .. resourceName .. "]  发现以下错误:")
+        for _, err in ipairs(VALIDATION_STATE.ERRORS) do
+            print("[script:" .. resourceName .. "]    - " .. err)
+        end
+
+        if #VALIDATION_STATE.SUSPICIOUS > 0 then
+            print("[script:" .. resourceName .. "]")
+            print("[script:" .. resourceName .. "]  疑似修改的文件:")
+            for _, info in ipairs(VALIDATION_STATE.SUSPICIOUS) do
+                print("[script:" .. resourceName .. "]    - " .. info)
+            end
+        end
+
+        print("[script:" .. resourceName .. "]")
+        print("[script:" .. resourceName .. "]  请恢复原始配置后重试")
+        print("[script:" .. resourceName .. "]  =========================================")
+    else
+        if #VALIDATION_STATE.SUSPICIOUS > 0 then
+            print("[script:" .. resourceName .. "]")
+            print("[script:" .. resourceName .. "]  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+            print("[script:" .. resourceName .. "]       验证通过 - 但检测到疑似修改")
+            print("[script:" .. resourceName .. "]  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+            print("[script:" .. resourceName .. "]")
+            print("[script:" .. resourceName .. "]  疑似修改的文件:")
+            for _, info in ipairs(VALIDATION_STATE.SUSPICIOUS) do
+                print("[script:" .. resourceName .. "]    - " .. info)
+            end
+            print("[script:" .. resourceName .. "]")
+            print("[script:" .. resourceName .. "]  如需帮助请联系作者")
+            print("[script:" .. resourceName .. "]  =========================================")
+        else
+            print("[script:" .. resourceName .. "]")
+            print("[script:" .. resourceName .. "]  =========================================")
+            print("[script:" .. resourceName .. "]       验证通过 - 所有检查成功!")
+            print("[script:" .. resourceName .. "]  =========================================")
+        end
+    end
+end
+
+--[[
     资源启动事件处理
-    执行完整的验证流程
 ]]
 AddEventHandler("onResourceStart", function(resourceName)
     if resourceName ~= GetCurrentResourceName() then return end
 
-    print("========================================")
-    print("[TEAR-LoadScreen] 开始验证...")
-    print("========================================")
+    print_ascii_header()
 
     clear_errors()
     VALIDATION_STATE.PASSED = false
 
     VALIDATION.ENCRYPTION_KEY = generate_validation_key()
 
+    -- 获取 GitHub 最新版本信息
+    print("[script:" .. resourceName .. "]")
+    print("[script:" .. resourceName .. "]  正在检查 GitHub 最新版本...")
+    local github_info = get_github_latest_version()
+    if github_info then
+        print("[script:" .. resourceName .. "]  GitHub 最新版本: v" .. github_info.version)
+        VALIDATION_STATE.LATEST_VERSION = github_info.version
+        VALIDATION_STATE.UPDATE_INFO = github_info
+    else
+        print("[script:" .. resourceName .. "]  无法获取 GitHub 版本信息")
+    end
+
+    print("[script:" .. resourceName .. "]")
+    print("[script:" .. resourceName .. "]  -----------------------------------------")
+    print("[script:" .. resourceName .. "]  开始验证...")
+    print("[script:" .. resourceName .. "]  -----------------------------------------")
+
     -- 验证资源名称
     local name_valid, name_msg = validate_resource_name()
-    print("[1/4] " .. name_msg)
+    print("[script:" .. resourceName .. "]  [1/4] " .. name_msg)
     if not name_valid then
         add_error(name_msg)
     end
@@ -446,76 +544,66 @@ AddEventHandler("onResourceStart", function(resourceName)
         local author_match = string.match(manifest_path, "author%s+['\"]([^'\"]+)['\"]")
         if author_match then
             local author_valid, author_msg = validate_author_name(author_match)
-            print("[2/4] " .. author_msg)
+            print("[script:" .. resourceName .. "]  [2/4] " .. author_msg)
             if not author_valid then
                 add_error(author_msg)
             end
         else
             local msg = "[TEAR-LoadScreen 验证错误] 无法从 fxmanifest.lua 解析作者"
-            print("[2/4] " .. msg)
+            print("[script:" .. resourceName .. "]  [2/4] " .. msg)
             add_error(msg)
         end
     else
         local msg = "[TEAR-LoadScreen 验证错误] 无法加载 fxmanifest.lua"
-        print("[2/4] " .. msg)
+        print("[script:" .. resourceName .. "]  [2/4] " .. msg)
         add_error(msg)
     end
 
     -- 验证版本号
     local client_version = GetResourceMetadata(resourceName, "version", 0) or "0.0.0"
     local version_valid, version_msg = validate_version(client_version, nil)
-    print("[3/4] " .. version_msg)
+    print("[script:" .. resourceName .. "]  [3/4] " .. version_msg)
     if not version_valid then
         add_error(version_msg)
+        VALIDATION_STATE.VERSION_OUTDATED = true
     end
 
     -- GitHub 文件对比
-    print("[4/4] 正在执行 GitHub 文件对比...")
+    print("[script:" .. resourceName .. "]  [4/4] 正在执行 GitHub 文件对比...")
     local compare_result = compare_files_with_github()
 
     if not compare_result.skipped then
-        print("----------------------------------------")
-        print("[GitHub 文件对比结果]")
-        print("  总文件数: " .. compare_result.total)
-        print("  已检查: " .. compare_result.checked)
-        print("  媒体文件已排除: " .. compare_result.media_excluded)
+        print("[script:" .. resourceName .. "]")
+        print("[script:" .. resourceName .. "]  -----------------------------------------")
+        print("[script:" .. resourceName .. "]  GitHub 文件对比结果:")
+        print("[script:" .. resourceName .. "]    总文件数: " .. compare_result.total)
+        print("[script:" .. resourceName .. "]    已检查: " .. compare_result.checked)
+        print("[script:" .. resourceName .. "]    媒体文件已排除: " .. compare_result.media_excluded)
 
         if #compare_result.missing > 0 then
-            print("  缺失文件: " .. #compare_result.missing)
+            print("[script:" .. resourceName .. "]    缺失文件: " .. #compare_result.missing)
             for _, f in ipairs(compare_result.missing) do
-                print("    - " .. f)
+                print("[script:" .. resourceName .. "]      - " .. f)
             end
         end
 
         if #compare_result.extra > 0 then
-            print("  疑似多余文件: " .. #compare_result.extra)
+            print("[script:" .. resourceName .. "]    疑似多余文件: " .. #compare_result.extra)
             for _, f in ipairs(compare_result.extra) do
-                print("    - " .. f)
+                print("[script:" .. resourceName .. "]      - " .. f)
             end
-        end
-
-        if #compare_result.missing > 0 or #compare_result.extra > 0 then
-            print("[TEAR-LoadScreen] 检测到疑似修改文件")
-        else
-            print("[TEAR-LoadScreen] GitHub 文件对比通过")
         end
     end
 
-    print("========================================")
+    -- 打印版本更新日志（仅过时版本）
+    print_update_info()
+
+    -- 打印最终结果
+    print_validation_result()
 
     if #VALIDATION_STATE.ERRORS > 0 then
-        print("[TEAR-LoadScreen] 验证失败 - 资源已禁用")
-        print("[TEAR-LoadScreen] 发现以下错误:")
-        for _, err in ipairs(VALIDATION_STATE.ERRORS) do
-            print("  - " .. err)
-        end
-        print("========================================")
-        print("[TEAR-LoadScreen] 在所有问题解决之前，资源将无法正常工作。")
-        print("========================================")
         VALIDATION_STATE.PASSED = false
     else
-        print("[TEAR-LoadScreen] 验证通过 - 所有检查成功!")
-        print("========================================")
         VALIDATION_STATE.PASSED = true
         VALIDATION_STATE.INITIALIZED = true
     end
@@ -523,7 +611,6 @@ end)
 
 --[[
     客户端验证请求处理
-    接收客户端的验证请求并返回验证结果
 ]]
 RegisterNetEvent("TEAR-LoadScreen:RequestValidation")
 AddEventHandler("TEAR-LoadScreen:RequestValidation", function()
@@ -532,7 +619,9 @@ AddEventHandler("TEAR-LoadScreen:RequestValidation", function()
     if not VALIDATION_STATE.PASSED then
         TriggerClientEvent("TEAR-LoadScreen:ValidationResult", source, false, {
             errors = VALIDATION_STATE.ERRORS,
-            suspicious = VALIDATION_STATE.SUSPICIOUS
+            suspicious = VALIDATION_STATE.SUSPICIOUS,
+            version_outdated = VALIDATION_STATE.VERSION_OUTDATED,
+            update_info = VALIDATION_STATE.VERSION_OUTDATED and VALIDATION_STATE.UPDATE_INFO or nil
         })
         return
     end
@@ -547,30 +636,23 @@ AddEventHandler("TEAR-LoadScreen:RequestValidation", function()
     TriggerClientEvent("TEAR-LoadScreen:ValidationResult", source, true, {
         encrypted = encrypted_response,
         message = "验证通过",
-        suspicious = VALIDATION_STATE.SUSPICIOUS
+        suspicious = VALIDATION_STATE.SUSPICIOUS,
+        version_outdated = VALIDATION_STATE.VERSION_OUTDATED,
+        update_info = VALIDATION_STATE.VERSION_OUTDATED and VALIDATION_STATE.UPDATE_INFO or nil
     })
 end)
 
 --[[
-    导出函数：检查验证是否通过
-    @return 验证状态 (boolean)
+    导出函数
 ]]
 exports("TEAR-LoadScreen:IsValidationPassed", function()
     return VALIDATION_STATE.PASSED
 end)
 
---[[
-    导出函数：获取验证错误列表
-    @return 错误信息数组
-]]
 exports("TEAR-LoadScreen:GetValidationErrors", function()
     return VALIDATION_STATE.ERRORS
 end)
 
---[[
-    导出函数：获取疑似修改文件列表
-    @return 疑似修改信息数组
-]]
 exports("TEAR-LoadScreen:GetSuspiciousFiles", function()
     return VALIDATION_STATE.SUSPICIOUS
 end)
