@@ -25,7 +25,7 @@ window.LOADSCREEN_LOGO_URL = 'images/logo.png';
  * Method 2: Set the array below to "no suffix" filenames, auto-detects png/jpg/jpeg/webp/gif/bmp, e.g., ['logo','bg','intro']
  */
 // window.LOADSCREEN_IMAGE_LIST_URL = 'images/list.txt';
-window.LOADSCREEN_IMAGE_NAMES = ['bg1', 'bg2', 'bg3'];
+// window.LOADSCREEN_IMAGE_NAMES = ['logo', 'bg', 'intro'];
 
 /** Whether to enable background music: true=enable, false=disable (quick toggle) */
 window.LOADSCREEN_BGM_ENABLED = false;

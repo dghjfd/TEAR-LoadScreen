@@ -586,7 +586,6 @@
             }, { once: true });
         }
         
-        // 播放器控制
         if ($playBtn) {
             $playBtn.addEventListener('click', function () {
                 if (!bgmEnabled && !useVideoAudio) return;
@@ -609,32 +608,15 @@
                 }
             });
             
-            // 根据音频源类型设置初始状态
             if (useVideoAudio) {
-                // 使用视频音频时，确保播放器按钮可见且可用
-                $playBtn.style.display = '';
-                $playBtn.style.opacity = '1';
-                $playBtn.style.pointerEvents = 'auto';
                 if ($slideVideo && !$slideVideo.muted) {
                     $playBtn.classList.add('playing');
                 }
-                console.log('[TEAR-LoadScreen] 播放器控制已启用（视频音频模式）');
             } else if (bgmEnabled) {
-                // 使用外部音频时
-                $playBtn.style.display = '';
-                $playBtn.style.opacity = '1';
-                $playBtn.style.pointerEvents = 'auto';
                 if ($bgm) {
                     $bgm.addEventListener('play', function () { $playBtn.classList.add('playing'); });
                     $bgm.addEventListener('pause', function () { $playBtn.classList.remove('playing'); });
                 }
-                console.log('[TEAR-LoadScreen] 播放器控制已启用（外部音频模式）');
-            } else {
-                // 禁用音频时隐藏播放器按钮
-                $playBtn.style.display = 'none';
-                $playBtn.style.opacity = '0';
-                $playBtn.style.pointerEvents = 'none';
-                console.log('[TEAR-LoadScreen] 播放器控制已禁用');
             }
         }
         
@@ -653,23 +635,8 @@
             if (useVideoAudio && $slideVideo) {
                 $slideVideo.volume = initialVolume;
                 $volumeRange.disabled = false;
-                $volumeRange.style.display = '';
-                $volumeRange.style.opacity = '1';
-                $volumeRange.style.pointerEvents = 'auto';
-                console.log('[TEAR-LoadScreen] 音量控制已启用（视频音频模式）');
             } else if (bgmEnabled && $bgm) {
                 $bgm.volume = initialVolume;
-                $volumeRange.disabled = false;
-                $volumeRange.style.display = '';
-                $volumeRange.style.opacity = '1';
-                $volumeRange.style.pointerEvents = 'auto';
-                console.log('[TEAR-LoadScreen] 音量控制已启用（外部音频模式）');
-            } else {
-                $volumeRange.disabled = true;
-                $volumeRange.style.display = 'none';
-                $volumeRange.style.opacity = '0';
-                $volumeRange.style.pointerEvents = 'none';
-                console.log('[TEAR-LoadScreen] 音量控制已禁用');
             }
         }
         
@@ -678,34 +645,6 @@
         if ($modeBtns) {
             $videoModeBtn = $modeBtns.querySelector('[data-mode="video"]');
             $imageModeBtn = $modeBtns.querySelector('[data-mode="image"]');
-            
-            // 图标元素
-            var $iconVideo = document.getElementById('icon-video');
-            var $iconImage = document.getElementById('icon-image');
-            var $iconVideoInactive = document.getElementById('icon-video-inactive');
-            var $iconImageActive = document.getElementById('icon-image-active');
-            
-            // 初始化图标显示状态
-            function updateModeIcons() {
-                if (displayMode === 'video') {
-                    // 视频模式按钮显示播放图标
-                    if ($iconVideo) $iconVideo.style.display = 'block';
-                    if ($iconImage) $iconImage.style.display = 'none';
-                    // 图片模式按钮显示相机图标（非激活）
-                    if ($iconVideoInactive) $iconVideoInactive.style.display = 'none';
-                    if ($iconImageActive) $iconImageActive.style.display = 'block';
-                } else {
-                    // 视频模式按钮显示相机图标
-                    if ($iconVideo) $iconVideo.style.display = 'none';
-                    if ($iconImage) $iconImage.style.display = 'block';
-                    // 图片模式按钮显示相机图标（激活）
-                    if ($iconVideoInactive) $iconVideoInactive.style.display = 'block';
-                    if ($iconImageActive) $iconImageActive.style.display = 'none';
-                }
-            }
-            
-            // 初始更新图标
-            updateModeIcons();
             
             $modeBtns.addEventListener('click', function (e) {
                 var btn = e.target.closest('.view-btn');
@@ -730,9 +669,6 @@
                 }
                 
                 console.log('[TEAR-LoadScreen] 显示模式切换为:', displayMode, 'useVideo:', useVideo);
-                
-                // 更新图标显示
-                updateModeIcons();
                 
                 // 重新构建幻灯片
                 buildSlides();
@@ -993,18 +929,17 @@
         
         // 检查是否启用视频模式，决定是否显示模式切换按钮
         var videoEnabled = typeof window.LOADSCREEN_USE_VIDEO !== 'undefined' && window.LOADSCREEN_USE_VIDEO;
-        var hasImagesConfig = typeof window.LOADSCREEN_IMAGE_NAMES !== 'undefined' || 
-                             typeof window.LOADSCREEN_IMAGE_LIST_URL !== 'undefined';
+        var hasImages = typeof window.LOADSCREEN_IMAGE_NAMES !== 'undefined' || 
+                       typeof window.LOADSCREEN_IMAGE_LIST_URL !== 'undefined';
         
         $modeBtns = document.getElementById('mode-btns');
-        // 只要有视频就显示按钮，不管有没有图片配置
-        if ($modeBtns && videoEnabled) {
+        if ($modeBtns && videoEnabled && hasImages) {
             $modeBtns.style.display = 'flex';
             displayMode = 'video';
-            console.log('[TEAR-LoadScreen] 显示模式切换按钮已启用（视频模式）');
+            console.log('[TEAR-LoadScreen] 显示模式切换按钮已启用（配置检测）');
         } else if ($modeBtns) {
             $modeBtns.style.display = 'none';
-            console.log('[TEAR-LoadScreen] 显示模式切换按钮已隐藏');
+            console.log('[TEAR-LoadScreen] 显示模式切换按钮已隐藏（配置检测）');
         }
         
         updateProgress(0);
@@ -1024,9 +959,6 @@
             if ($modeBtns && videoEnabled && list.length > 0) {
                 $modeBtns.style.display = 'flex';
                 console.log('[TEAR-LoadScreen] 显示模式切换按钮已启用（图片加载完成）');
-            } else if ($modeBtns && list.length === 0 && !hasImagesConfig) {
-                // 如果没有图片配置，保持按钮显示（只有视频模式）
-                console.log('[TEAR-LoadScreen] 仅视频模式，按钮保持显示');
             } else if ($modeBtns && list.length === 0) {
                 $modeBtns.style.display = 'none';
                 console.log('[TEAR-LoadScreen] 显示模式切换按钮已隐藏（无图片）');
@@ -1040,10 +972,8 @@
             console.error('[TEAR-LoadScreen] 图片加载失败:', err);
             imageList = [];
             
-            // 图片加载失败后，如果有视频仍然显示按钮
-            if ($modeBtns && videoEnabled) {
-                console.log('[TEAR-LoadScreen] 图片加载失败，但视频模式按钮保持显示');
-            } else if ($modeBtns) {
+            // 图片加载失败后隐藏按钮
+            if ($modeBtns) {
                 $modeBtns.style.display = 'none';
                 console.log('[TEAR-LoadScreen] 显示模式切换按钮已隐藏（加载失败）');
             }
