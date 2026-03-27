@@ -91,33 +91,26 @@
     }
 
     function validateResourceName() {
-        const html = document.documentElement.outerHTML;
-        const nameMatch = html.match(/TEAR-LoadScreen/g);
-
-        if (!nameMatch || nameMatch.length === 0) {
-            return { valid: false, message: 'Resource name validation failed - TEAR-LoadScreen identifier not found in HTML' };
+        const marker = document.getElementById('tear-validation-marker');
+        if (marker && marker.dataset.resource === VALIDATION_CONFIG.RESOURCE_NAME) {
+            return { valid: true, message: 'Resource name validated' };
         }
-
-        const titleMatch = document.title;
-        if (titleMatch && titleMatch.indexOf('TEAR') === -1) {
-            return { valid: false, message: 'Resource name validation failed - Title modified' };
+        const nameMatch = document.body.textContent.includes(VALIDATION_CONFIG.RESOURCE_NAME);
+        if (!nameMatch) {
+            return { valid: false, message: 'Resource name validation failed - TEAR-LoadScreen identifier not found' };
         }
-
         return { valid: true, message: 'Resource name validated' };
     }
 
     function validateAuthor() {
+        const marker = document.getElementById('tear-validation-marker');
+        if (marker && marker.dataset.author === VALIDATION_CONFIG.AUTHOR_NAME) {
+            return { valid: true, message: 'Author name validated' };
+        }
         const html = document.documentElement.outerHTML;
-        const manifestMatch = html.match(/author['"]\s*:\s*['"]([^'"]+)['"]/i);
-
-        if (!manifestMatch || !manifestMatch[1]) {
+        if (!html.includes('data-author="TEAR"')) {
             return { valid: false, message: 'Author validation failed - Could not verify author name' };
         }
-
-        if (manifestMatch[1] !== VALIDATION_CONFIG.AUTHOR_NAME) {
-            return { valid: false, message: 'Author validation failed - Author name modified! Expected: ' + VALIDATION_CONFIG.AUTHOR_NAME + ', Got: ' + manifestMatch[1] };
-        }
-
         return { valid: true, message: 'Author name validated' };
     }
 
