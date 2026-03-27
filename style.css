@@ -442,19 +442,6 @@ html, body {
     border-radius: 8px;
     transition: background var(--dur-normal) var(--ease-out-smooth), color var(--dur-normal) var(--ease-out-smooth), transform var(--dur-fast) var(--ease-out-expo);
 }
-.view-btn svg {
-    width: 20px;
-    height: 20px;
-    display: block;
-}
-.view-btn svg[fill="none"] {
-    fill: none;
-    stroke: currentColor;
-}
-.view-btn svg polygon[fill="currentColor"] {
-    fill: currentColor;
-    stroke: none;
-}
 .view-btn:hover {
     background: rgba(255,255,255,0.08);
     color: rgba(255,255,255,0.95);

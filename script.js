@@ -147,8 +147,6 @@
 
     var viewMode = 'carousel';
     var gridSize = 1;
-    var displayMode = 'video'; // 'video' or 'image'
-    var $modeBtns, $videoModeBtn, $imageModeBtn;
 
     /** 尝试加载单个图片，成功返回路径，失败返回 null */
     function tryLoadImage(path) {
@@ -640,43 +638,6 @@
             }
         }
         
-        // 显示模式切换按钮事件（视频/图片）
-        $modeBtns = document.getElementById('mode-btns');
-        if ($modeBtns) {
-            $videoModeBtn = $modeBtns.querySelector('[data-mode="video"]');
-            $imageModeBtn = $modeBtns.querySelector('[data-mode="image"]');
-            
-            $modeBtns.addEventListener('click', function (e) {
-                var btn = e.target.closest('.view-btn');
-                if (!btn || btn.dataset.mode === undefined) return;
-                
-                var newMode = btn.dataset.mode;
-                if (newMode === displayMode) return;
-                
-                displayMode = newMode;
-                
-                // 更新按钮状态
-                document.querySelectorAll('#mode-btns .view-btn').forEach(function (b) { 
-                    b.classList.remove('view-btn-active'); 
-                });
-                btn.classList.add('view-btn-active');
-                
-                // 根据配置决定是否启用视频
-                if (displayMode === 'video' && typeof window.LOADSCREEN_USE_VIDEO !== 'undefined') {
-                    useVideo = window.LOADSCREEN_USE_VIDEO;
-                } else {
-                    useVideo = false;
-                }
-                
-                console.log('[TEAR-LoadScreen] 显示模式切换为:', displayMode, 'useVideo:', useVideo);
-                
-                // 重新构建幻灯片
-                buildSlides();
-                buildDots();
-                goTo(0);
-            });
-        }
-        
         document.getElementById('view-btns').addEventListener('click', function (e) {
             var btn = e.target.closest('.view-btn');
             if (!btn || btn.dataset.view === undefined) return;
@@ -927,21 +888,6 @@
         
         initDOMElements();
         
-        // 检查是否启用视频模式，决定是否显示模式切换按钮
-        var videoEnabled = typeof window.LOADSCREEN_USE_VIDEO !== 'undefined' && window.LOADSCREEN_USE_VIDEO;
-        var hasImages = typeof window.LOADSCREEN_IMAGE_NAMES !== 'undefined' || 
-                       typeof window.LOADSCREEN_IMAGE_LIST_URL !== 'undefined';
-        
-        $modeBtns = document.getElementById('mode-btns');
-        if ($modeBtns && videoEnabled && hasImages) {
-            $modeBtns.style.display = 'flex';
-            displayMode = 'video';
-            console.log('[TEAR-LoadScreen] 显示模式切换按钮已启用（配置检测）');
-        } else if ($modeBtns) {
-            $modeBtns.style.display = 'none';
-            console.log('[TEAR-LoadScreen] 显示模式切换按钮已隐藏（配置检测）');
-        }
-        
         updateProgress(0);
         setTipText(0);
         startTipRotate();
@@ -954,16 +900,6 @@
         discoverImages().then(function (list) {
             console.log('[TEAR-LoadScreen] 图片加载完成，数量:', list.length);
             imageList = list;
-            
-            // 图片加载完成后再次检查是否显示模式按钮
-            if ($modeBtns && videoEnabled && list.length > 0) {
-                $modeBtns.style.display = 'flex';
-                console.log('[TEAR-LoadScreen] 显示模式切换按钮已启用（图片加载完成）');
-            } else if ($modeBtns && list.length === 0) {
-                $modeBtns.style.display = 'none';
-                console.log('[TEAR-LoadScreen] 显示模式切换按钮已隐藏（无图片）');
-            }
-            
             buildSlides();
             buildDots();
             applyViewMode();
@@ -971,13 +907,6 @@
         }).catch(function(err) {
             console.error('[TEAR-LoadScreen] 图片加载失败:', err);
             imageList = [];
-            
-            // 图片加载失败后隐藏按钮
-            if ($modeBtns) {
-                $modeBtns.style.display = 'none';
-                console.log('[TEAR-LoadScreen] 显示模式切换按钮已隐藏（加载失败）');
-            }
-            
             buildSlides();
             buildDots();
             applyViewMode();
