@@ -4,7 +4,7 @@
 
 **A feature-rich, highly customizable loading screen for FiveM**
 
-[![Version](https://img.shields.io/badge/version-2.2.7-4f8ef7?style=for-the-badge&logo=github)](fxmanifest.lua)
+[![Version](https://img.shields.io/badge/version-2.2.8-4f8ef7?style=for-the-badge&logo=github)](fxmanifest.lua)
 [![License](https://img.shields.io/badge/license-GPL--3.0-22c55e?style=for-the-badge)](LICENSE)
 [![FiveM](https://img.shields.io/badge/platform-FiveM-f97316?style=for-the-badge)](https://fivem.net/)
 [![Protection](https://img.shields.io/badge/protection-TEAR--Validation-ef4444?style=for-the-badge)]()
@@ -236,7 +236,7 @@ This project is licensed under **GPL-3.0** — see the [LICENSE](LICENSE) file f
 
 <div align="center">
 
-**Version 2.2.7** · Author **TEARLESSVVOID**
+**Version 2.2.8** · Author **TEARLESSVVOID**
 
 *Keep the resource name `TEAR-LoadScreen` and author info unchanged,  
 or the validation system will automatically disable this resource.*

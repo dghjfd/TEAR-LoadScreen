@@ -12,7 +12,7 @@ local VALIDATION = {
     AUTHOR_NAME = "TEARLESSVVOID",
     GITHUB_REPO = "https://api.github.com/repos/dghjfd/TEAR-LoadScreen/releases/latest",
     GITHUB_API = "https://api.github.com/repos/dghjfd/TEAR-LoadScreen",
-    REQUIRED_VERSION = "2.2.7",
+    REQUIRED_VERSION = "2.2.8",
     ENCRYPTION_KEY = nil,
     INITIALIZED = false
 }
@@ -22,6 +22,10 @@ local MEDIA_EXTENSIONS = {
     ['.webp'] = true, ['.bmp'] = true, ['.mp3'] = true, ['.wav'] = true,
     ['.ogg'] = true, ['.mp4'] = true, ['.webm'] = true, ['.avi'] = true, ['.mkv'] = true
 }
+
+-- 跳过这些路径类型，避免将占位说明文件或纯文件夹误报为缺失
+local SKIP_EXTENSIONS = { ['.txt'] = true, ['.md'] = true }
+local SKIP_PATHS = { ['audio'] = true, ['images'] = true, ['videos'] = true }
 
 local C = {
     RED = "^1",
@@ -168,7 +172,7 @@ local function fetch_url(url)
     end, "GET", "", {
         ["Content-Type"] = "application/json",
         ["Accept"]       = "application/json",
-        ["User-Agent"]   = "TEAR-LoadScreen-Validator/2.2.7"
+        ["User-Agent"]   = "TEAR-LoadScreen-Validator/2.2.8"
     })
 
     -- 最长等待 8 秒，每帧检查一次
@@ -227,7 +231,15 @@ local function compare_files_with_github()
     for _, filepath in ipairs(github_files) do
         result.total = result.total + 1
         local ext = string.match(filepath, "%.[^.]+$") or ""
+
+        -- 跳过媒体文件
         if is_media_file(ext) or is_media_file(filepath) then
+            result.media_excluded = result.media_excluded + 1
+        -- 跳过纯文件夹路径（无扩展名且是已知媒体目录）
+        elseif ext == "" and SKIP_PATHS[filepath] then
+            result.media_excluded = result.media_excluded + 1
+        -- 跳过 .txt / .md 占位说明文件（用于保持目录结构，非功能性文件）
+        elseif SKIP_EXTENSIONS[ext] then
             result.media_excluded = result.media_excluded + 1
         else
             result.checked = result.checked + 1
@@ -360,7 +372,8 @@ local function perform_validation()
     local version_prefix = version_valid and C.GREEN .. "  ✓" or C.YELLOW .. "  !"
     print(C.WHITE .. "║" .. version_prefix .. " [3/4] " .. version_msg .. string.rep(" ", 45 - #version_msg) .. "║" .. C.RESET)
     if not version_valid then
-        add_error(version_msg)
+        -- 版本过旧只记录警告，不作为致命错误（不禁用资源）
+        add_suspicious(version_msg)
         VALIDATION_STATE.VERSION_OUTDATED = true
     end
 

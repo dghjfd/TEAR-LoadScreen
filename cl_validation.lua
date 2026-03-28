@@ -6,7 +6,7 @@
 local VALIDATION_CONFIG = {
     RESOURCE_NAME = "TEAR-LoadScreen",
     AUTHOR_NAME    = "TEARLESSVVOID",   -- 与 fxmanifest.lua 保持一致
-    REQUIRED_VERSION = "2.2.7",         -- 与 sv_validation.lua / fxmanifest.lua 保持一致
+    REQUIRED_VERSION = "2.2.8",         -- 与 sv_validation.lua / fxmanifest.lua 保持一致
     VALIDATION_TIMEOUT = 10000,
     MAX_RETRIES = 3
 }
