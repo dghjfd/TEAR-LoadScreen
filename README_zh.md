@@ -4,7 +4,7 @@
 
 **专为 FiveM 打造的高颜值加载屏幕**
 
-[![Version](https://img.shields.io/badge/版本-2.2.6-4f8ef7?style=for-the-badge&logo=github)](fxmanifest.lua)
+[![Version](https://img.shields.io/badge/版本-2.2.7-4f8ef7?style=for-the-badge&logo=github)](fxmanifest.lua)
 [![License](https://img.shields.io/badge/许可证-GPL--3.0-22c55e?style=for-the-badge)](LICENSE)
 [![FiveM](https://img.shields.io/badge/平台-FiveM-f97316?style=for-the-badge)](https://fivem.net/)
 [![Protection](https://img.shields.io/badge/保护-TEAR--Validation-ef4444?style=for-the-badge)]()
@@ -236,7 +236,7 @@ TEAR-LoadScreen/
 
 <div align="center">
 
-**版本 2.2.6** · 作者 **TEARLESSVVOID**
+**版本 2.2.7** · 作者 **TEARLESSVVOID**
 
 *保持 `TEAR-LoadScreen` 资源名称和作者信息不变，否则验证系统将自动禁用本资源。*
 
