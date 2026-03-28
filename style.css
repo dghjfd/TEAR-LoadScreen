@@ -564,7 +564,6 @@ html, body {
     z-index: 102;
     width: 44px;
     height: 44px;
-    border: none;
     background: rgba(255,255,255,0.1);
     color: #fff;
     font-size: 28px;
@@ -598,7 +597,6 @@ html, body {
     z-index: 102;
     width: 50px;
     height: 50px;
-    border: none;
     background: rgba(255,255,255,0.1);
     color: #fff;
     font-size: 32px;

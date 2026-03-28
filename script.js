@@ -214,58 +214,52 @@
     }
 
     function buildSlides() {
+        // 先保存视频与叠加层引用，避免被 innerHTML 清空
+        var savedVideo   = $slideVideo;
+        var savedOverlay = $slideVideoOverlay;
+
+        // 清空图片 slides（保留视频节点将被重新插入）
         $slides.innerHTML = '';
-        
+        $slides.classList.remove('placeholder');
+
         console.log('[TEAR-LoadScreen] buildSlides 开始，useVideo:', useVideo);
-        
-        // 首先添加视频（如果启用）
+
         if (useVideo) {
-            $slideVideo.style.display = '';
-            $slideVideo.style.opacity = '1';
-            $slideVideo.style.zIndex = '10';
-            if ($slideVideoOverlay) {
-                $slideVideoOverlay.style.display = '';
-                $slideVideoOverlay.style.zIndex = '11';
-            }
-            $slideVideo.classList.add('active');
-            $slides.appendChild($slideVideo);
-            if ($slideVideoOverlay) {
-                $slides.appendChild($slideVideoOverlay);
-            }
+            savedVideo.style.display   = '';
+            savedVideo.classList.add('active');
+            if (savedOverlay) savedOverlay.style.display = '';
+            $slides.appendChild(savedVideo);
+            if (savedOverlay) $slides.appendChild(savedOverlay);
             console.log('[TEAR-LoadScreen] 视频模式已启用');
         } else {
-            $slideVideo.style.display = 'none';
-            $slideVideo.style.opacity = '0';
-            $slideVideo.style.zIndex = '0';
-            if ($slideVideoOverlay) {
-                $slideVideoOverlay.style.display = 'none';
-            }
-            $slideVideo.classList.remove('active');
+            savedVideo.style.display = 'none';
+            savedVideo.classList.remove('active');
+            if (savedOverlay) savedOverlay.style.display = 'none';
         }
-        
-        // 然后添加图片
+
         imageList.forEach(function (src, i) {
             const div = document.createElement('div');
             const actualIndex = useVideo ? i + 1 : i;
             div.className = 'slide' + (actualIndex === currentIndex ? ' active' : '');
             div.style.backgroundImage = "url('" + src + "')";
-            div.style.zIndex = useVideo ? '5' : '1';
             div.dataset.index = String(actualIndex);
             div.setAttribute('aria-hidden', 'true');
             $slides.appendChild(div);
         });
-        
-        // 如果没有视频也没有图片，显示占位背景
+
         if (imageList.length === 0 && !useVideo) {
             $slides.classList.add('placeholder');
             const div = document.createElement('div');
             div.className = 'slide active';
-            div.style.zIndex = '1';
             div.style.backgroundImage = 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)';
             $slides.appendChild(div);
             console.log('[TEAR-LoadScreen] 无视频无图片，显示占位背景');
         }
-        
+
+        // 同步全局引用（innerHTML 清空后重新插入，引用可能已失效）
+        $slideVideo       = savedVideo;
+        $slideVideoOverlay = savedOverlay;
+
         console.log('[TEAR-LoadScreen] buildSlides 完成，useVideo:', useVideo, 'imageList.length:', imageList.length);
     }
 
@@ -341,10 +335,6 @@
         const len = totalItems || 1;
         const newIndex = ((index % len) + len) % len;
         
-        if (useVideo && currentIndex === 0 && newIndex !== 0) {
-            return;
-        }
-        
         currentIndex = newIndex;
         
         if (useVideo && currentIndex === 0) {
@@ -384,19 +374,23 @@
     }
 
     function next() {
-        if (useVideo && currentIndex === 0) return;
+        // 仅视频且无图片时无法切换
+        if (useVideo && imageList.length === 0) return;
         goTo(currentIndex + 1);
     }
 
     function prev() {
-        if (useVideo && currentIndex === 0) return;
+        // 仅视频且无图片时无法切换
+        if (useVideo && imageList.length === 0) return;
         goTo(currentIndex - 1);
     }
 
     function resetAuto() {
         if (autoTimer) clearInterval(autoTimer);
+        // 当前是视频帧时不自动切换，让视频自然播放
         if (useVideo && currentIndex === 0) return;
-        if (imageList.length > 1) {
+        if ((useVideo ? imageList.length : imageList.length) > 1 ||
+            (useVideo && imageList.length >= 1)) {
             autoTimer = setInterval(next, AUTO_INTERVAL);
         }
     }
@@ -466,6 +460,8 @@
 
     function openLightbox() {
         if (imageList.length === 0) return;
+        // 视频模式下 index=0 为视频，不进灯箱；图片从 index=1 开始
+        if (useVideo && currentIndex === 0) return;
         $lightbox.classList.add('open');
         $lightbox.setAttribute('aria-hidden', 'false');
         updateLightboxContent();
@@ -479,21 +475,23 @@
     }
 
     function updateLightboxContent() {
-        var src = imageList[currentIndex];
+        // 视频模式下 currentIndex=0 为视频，图片偏移 1；否则直接映射
+        var imgIndex = useVideo ? currentIndex - 1 : currentIndex;
+        var src = imageList[imgIndex];
         if (!src) return;
         var alreadyShown = $lightboxImg.src && String($lightboxImg.src).length > 10;
         if (alreadyShown) {
             $lightboxImg.classList.add('swapping');
             setTimeout(function () {
                 $lightboxImg.src = src;
-                $lightboxImg.alt = 'Image ' + (currentIndex + 1) + ' / ' + imageList.length;
-                $lightboxCounter.textContent = (currentIndex + 1) + ' / ' + imageList.length;
+                $lightboxImg.alt = 'Image ' + (imgIndex + 1) + ' / ' + imageList.length;
+                $lightboxCounter.textContent = (imgIndex + 1) + ' / ' + imageList.length;
                 $lightboxImg.classList.remove('swapping');
             }, 180);
         } else {
             $lightboxImg.src = src;
-            $lightboxImg.alt = 'Image ' + (currentIndex + 1) + ' / ' + imageList.length;
-            $lightboxCounter.textContent = (currentIndex + 1) + ' / ' + imageList.length;
+            $lightboxImg.alt = 'Image ' + (imgIndex + 1) + ' / ' + imageList.length;
+            $lightboxCounter.textContent = (imgIndex + 1) + ' / ' + imageList.length;
         }
     }
 
@@ -791,10 +789,8 @@
                 }
             }, 2000);
         })();
-        if (typeof window.onmessage !== 'undefined') {
-            window.addEventListener('message', onMessage);
-        }
-        window.onmessage = onMessage;
+        // 只使用 addEventListener，避免 onmessage 赋值导致消息被处理两次
+        window.addEventListener('message', onMessage);
     }
 
     function initVideo() {
@@ -851,8 +847,12 @@
                 $slideVideo.addEventListener('error', function(err) {
                     console.error('[TEAR-LoadScreen] 视频加载错误:', err);
                     console.error('[TEAR-LoadScreen] 视频 URL:', videoUrl);
-                    console.warn('[TEAR-LoadScreen] 视频加载失败，但保持显示第一帧');
+                    console.warn('[TEAR-LoadScreen] 视频加载失败，降级为图片轮播模式');
                     useVideo = false;
+                    // 视频加载失败后重建 DOM，确保 UI 与状态同步
+                    buildSlides();
+                    buildDots();
+                    resetAuto();
                 });
                 
                 function tryPlayVideo() {

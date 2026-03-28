@@ -63,7 +63,8 @@ local function generate_validation_key()
     local hash = GetHashKey(source)
     local key = ""
     for i = 1, 16 do
-        local shifted = math.floor(hash / math.pow(2, (i - 1) * 4))
+        -- math.pow 在 Lua 5.4 / CitizenFX 中已废弃，改用 ^ 运算符
+        local shifted = math.floor(hash / (2 ^ ((i - 1) * 4)))
         local byte = shifted % 256
         if byte == 0 then byte = 65 end
         key = key .. string.char(byte)
@@ -101,32 +102,34 @@ local function validate_version(client_version)
         return parts
     end
 
-    local p_client = parse_version(client_version)
-    local p_required = parse_version(required)
+    -- 按语义化版本规范逐段比较，返回 -1/0/1
+    local function compare_versions(v1, v2)
+        local p1, p2 = parse_version(v1), parse_version(v2)
+        for i = 1, 3 do
+            if p1[i] > p2[i] then return 1
+            elseif p1[i] < p2[i] then return -1 end
+        end
+        return 0
+    end
 
-    local diffs = {
-        major = p_client[1] - p_required[1],
-        minor = p_client[2] - p_required[2],
-        patch = p_client[3] - p_required[3]
-    }
+    local cmp = compare_versions(client_version, required)
 
-    local forced = math.abs(diffs.major) > 1 or
-                   math.abs(diffs.minor) > 1 or
-                   math.abs(diffs.patch) > 1
+    if cmp < 0 then
+        -- 检查 major 版本差距，超过 1 个主版本为强制更新
+        local p_client   = parse_version(client_version)
+        local p_required = parse_version(required)
+        local forced     = (p_required[1] - p_client[1]) > 1
 
-    if diffs.major < 0 or diffs.minor < 0 or diffs.patch < 0 then
         if forced then
             return false, C.RED .. "[TEAR-LoadScreen 强制更新] 版本过旧! 当前: " .. client_version .. " → 最低要求: " .. required .. C.RESET
         else
-            return false, C.YELLOW .. "[TEAR-LoadScreen 验证错误] 版本过旧! 当前: " .. client_version .. " → 最低要求: " .. required .. C.RESET
+            return false, C.YELLOW .. "[TEAR-LoadScreen 版本警告] 版本过旧! 当前: " .. client_version .. " → 最低要求: " .. required .. C.RESET
         end
-    end
-
-    if p_client[1] > p_required[1] or p_client[2] > p_required[2] or p_client[3] > p_required[3] then
+    elseif cmp > 0 then
         return true, C.GREEN .. "版本验证成功 (检测到更新版本)" .. C.RESET
+    else
+        return true, C.GREEN .. "版本验证成功" .. C.RESET
     end
-
-    return true, C.GREEN .. "版本验证成功" .. C.RESET
 end
 
 local VALIDATION_STATE = {
@@ -152,19 +155,30 @@ local function clear_state()
     VALIDATION_STATE.UPDATE_INFO = nil
 end
 
+-- 使用协程安全等待 PerformHttpRequest 回调，避免异步竞态
 local function fetch_url(url)
-    local result, status = nil, 0
-    if PerformHttpRequest then
-        PerformHttpRequest(url, function(errorCode, response)
-            if errorCode == 200 then result = response end
-            status = errorCode
-        end, "GET", "", {
-            ["Content-Type"] = "application/json",
-            ["Accept"] = "application/json",
-            ["User-Agent"] = "TEAR-LoadScreen-Validator/2.2.3"
-        })
+    -- 必须在 CreateThread 协程内调用此函数
+    local result, statusCode = nil, 0
+    local done = false
+
+    PerformHttpRequest(url, function(code, response)
+        statusCode = code
+        if code == 200 then result = response end
+        done = true
+    end, "GET", "", {
+        ["Content-Type"] = "application/json",
+        ["Accept"]       = "application/json",
+        ["User-Agent"]   = "TEAR-LoadScreen-Validator/2.2.3"
+    })
+
+    -- 最长等待 8 秒，每帧检查一次
+    local waited = 0
+    while not done and waited < 8000 do
+        Wait(100)
+        waited = waited + 100
     end
-    return result, status
+
+    return result, statusCode
 end
 
 local function get_github_latest_version()
@@ -415,8 +429,11 @@ end
 AddEventHandler("onResourceStart", function(resourceName)
     if resourceName ~= GetCurrentResourceName() then return end
     
+    -- 延迟 2 秒后在协程中运行，确保 fetch_url 的 Wait 调用安全
     SetTimeout(2000, function()
-        perform_validation()
+        CreateThread(function()
+            perform_validation()
+        end)
     end)
 end)
 

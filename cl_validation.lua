@@ -5,7 +5,8 @@
 
 local VALIDATION_CONFIG = {
     RESOURCE_NAME = "TEAR-LoadScreen",
-    REQUIRED_VERSION = "2.1.6",
+    AUTHOR_NAME    = "TEARLESSVVOID",   -- 与 fxmanifest.lua 保持一致
+    REQUIRED_VERSION = "2.2.3",         -- 与 sv_validation.lua / fxmanifest.lua 保持一致
     VALIDATION_TIMEOUT = 10000,
     MAX_RETRIES = 3
 }
@@ -45,7 +46,7 @@ local function validate_author(manifest_content)
 
     local author_match = string.match(manifest_content, "author%s+['\"]([^'\"]+)['\"]")
     if author_match then
-        if author_match == "TEAR" then
+        if author_match == VALIDATION_CONFIG.AUTHOR_NAME then
             return true, "作者名称验证成功"
         else
             return false, "作者名称不匹配: " .. author_match
@@ -217,52 +218,56 @@ end)
 AddEventHandler("onResourceStart", function(resName)
     if resName ~= GetCurrentResourceName() then return end
 
-    log_info("========================================")
-    log_info("开始客户端验证...")
-    log_info("========================================")
-
-    local name_valid, name_msg = validate_local_resource_name()
-    log_info("[1/4] " .. name_msg)
-    if not name_valid then
-        validation_state.errors[#validation_state.errors + 1] = name_msg
-    end
-
-    local manifest_content = LoadResourceFile(GetCurrentResourceName(), "fxmanifest.lua")
-    local author_valid, author_msg = validate_author(manifest_content)
-    log_info("[2/4] " .. author_msg)
-    if not author_valid then
-        validation_state.errors[#validation_state.errors + 1] = author_msg
-    end
-
-    local version = GetResourceMetadata(GetCurrentResourceName(), "version", 0)
-    local version_valid, version_msg = validate_version(version)
-    log_info("[3/4] " .. version_msg)
-    if not version_valid then
-        validation_state.errors[#validation_state.errors + 1] = version_msg
-    end
-
-    log_info("[4/4] 正在请求服务端验证...")
-    TriggerServerEvent("TEAR-LoadScreen:RequestValidation")
-
-    Wait(VALIDATION_CONFIG.VALIDATION_TIMEOUT)
-
-    if not validation_state.passed then
-        validation_state.retries = validation_state.retries + 1
-        if validation_state.retries < VALIDATION_CONFIG.MAX_RETRIES then
-            log_info("正在重试服务端验证... (尝试 " .. validation_state.retries .. "/" .. VALIDATION_CONFIG.MAX_RETRIES .. ")")
-            TriggerServerEvent("TEAR-LoadScreen:RequestValidation")
-        else
-            log_error("服务端验证超时，已达到最大重试次数 " .. VALIDATION_CONFIG.MAX_RETRIES)
-            validation_state.errors[#validation_state.errors + 1] = "服务端验证超时"
-        end
-    end
-
-    if not validation_state.passed and #validation_state.errors > 0 then
+    -- 在协程中运行，避免阻塞主线程
+    CreateThread(function()
         log_info("========================================")
-        show_validation_error(validation_state.errors)
-        CreateThread(draw_validation_overlay)
-    end
+        log_info("开始客户端验证...")
+        log_info("========================================")
 
-    log_info("========================================")
-    validation_state.validation_complete = true
+        local name_valid, name_msg = validate_local_resource_name()
+        log_info("[1/4] " .. name_msg)
+        if not name_valid then
+            validation_state.errors[#validation_state.errors + 1] = name_msg
+        end
+
+        local manifest_content = LoadResourceFile(GetCurrentResourceName(), "fxmanifest.lua")
+        local author_valid, author_msg = validate_author(manifest_content)
+        log_info("[2/4] " .. author_msg)
+        if not author_valid then
+            validation_state.errors[#validation_state.errors + 1] = author_msg
+        end
+
+        local version = GetResourceMetadata(GetCurrentResourceName(), "version", 0)
+        local version_valid, version_msg = validate_version(version)
+        log_info("[3/4] " .. version_msg)
+        if not version_valid then
+            validation_state.errors[#validation_state.errors + 1] = version_msg
+        end
+
+        log_info("[4/4] 正在请求服务端验证...")
+        TriggerServerEvent("TEAR-LoadScreen:RequestValidation")
+
+        -- 在协程内安全等待，不阻塞主线程
+        Wait(VALIDATION_CONFIG.VALIDATION_TIMEOUT)
+
+        if not validation_state.server_validated and not validation_state.passed then
+            validation_state.retries = validation_state.retries + 1
+            if validation_state.retries < VALIDATION_CONFIG.MAX_RETRIES then
+                log_info("正在重试服务端验证... (尝试 " .. validation_state.retries .. "/" .. VALIDATION_CONFIG.MAX_RETRIES .. ")")
+                TriggerServerEvent("TEAR-LoadScreen:RequestValidation")
+            else
+                log_error("服务端验证超时，已达到最大重试次数 " .. VALIDATION_CONFIG.MAX_RETRIES)
+                validation_state.errors[#validation_state.errors + 1] = "服务端验证超时"
+            end
+        end
+
+        if not validation_state.passed and #validation_state.errors > 0 then
+            log_info("========================================")
+            show_validation_error(validation_state.errors)
+            CreateThread(draw_validation_overlay)
+        end
+
+        log_info("========================================")
+        validation_state.validation_complete = true
+    end)
 end)

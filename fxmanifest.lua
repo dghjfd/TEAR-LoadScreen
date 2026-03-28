@@ -1,11 +1,11 @@
 --[[
-    TEA-LoadScreen - 自动检测图片 + 高交互性加载屏幕
+    TEAR-LoadScreen - 自动检测图片 + 高交互性加载屏幕
     - 自动检测 images/ 中的图片扩展名，无需编号；支持 list.txt 或配置指定的顺序
     - 键盘/鼠标点击/进度条/触摸滑动
 
     此资源受 TEAR 验证系统保护
     - 资源名称：TEAR-LoadScreen（禁止修改）
-    - 作者：TEAR（禁止修改）
+    - 作者：TEARLESSVVOID（禁止修改）
     - GitHub 版本检查：已启用
     - 防篡改保护：已激活
 ]]
