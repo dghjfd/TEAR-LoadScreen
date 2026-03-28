@@ -10,8 +10,8 @@
 local VALIDATION = {
     RESOURCE_NAME = "TEAR-LoadScreen",
     AUTHOR_NAME = "TEARLESSVVOID",
-    GITHUB_REPO = "https://api.github.com/repos/TEAR-Official/TEAR-LoadScreen/releases/latest",
-    GITHUB_API = "https://api.github.com/repos/TEAR-Official/TEAR-LoadScreen",
+    GITHUB_REPO = "https://api.github.com/repos/dghjfd/TEAR-LoadScreen/releases/latest",
+    GITHUB_API = "https://api.github.com/repos/dghjfd/TEAR-LoadScreen",
     REQUIRED_VERSION = "2.2.4",
     ENCRYPTION_KEY = nil,
     INITIALIZED = false
@@ -265,7 +265,7 @@ local function print_header()
     print(C.CYAN .. "╠════════════════════════════════════════════════════════════╣" .. C.RESET)
     print(C.CYAN .. "║" .. C.WHITE .. "                                                            ║" .. C.RESET)
     print(C.CYAN .. "║" .. C.WHITE .. "  " .. C.GREEN .. "TEAR-LoadScreen" .. C.WHITE .. "          " .. C.WHITE .. "版本: " .. C.CYAN .. "v" .. VALIDATION.REQUIRED_VERSION .. C.WHITE .. "          ║" .. C.RESET)
-    print(C.CYAN .. "║" .. C.WHITE .. "  " .. C.YELLOW .. "作者: TEAR" .. C.WHITE .. "                                                  ║" .. C.RESET)
+    print(C.CYAN .. "║" .. C.WHITE .. "  " .. C.YELLOW .. "作者: TEARLESSVVOID" .. C.WHITE .. "                                             ║" .. C.RESET)
     print(C.CYAN .. "║" .. C.WHITE .. "  " .. C.GREY .. "Protected by TEAR Validation System" .. C.WHITE .. "                        ║" .. C.RESET)
     print(C.CYAN .. "║" .. C.WHITE .. "                                                            ║" .. C.RESET)
     print(C.CYAN .. "╚════════════════════════════════════════════════════════════╝" .. C.RESET)
