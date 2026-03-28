@@ -1,175 +1,244 @@
-**[中文版](README_zh.md)** | English
+<div align="center">
+
+# 🎬 TEAR-LoadScreen
+
+**A feature-rich, highly customizable loading screen for FiveM**
+
+[![Version](https://img.shields.io/badge/version-2.2.6-4f8ef7?style=for-the-badge&logo=github)](fxmanifest.lua)
+[![License](https://img.shields.io/badge/license-GPL--3.0-22c55e?style=for-the-badge)](LICENSE)
+[![FiveM](https://img.shields.io/badge/platform-FiveM-f97316?style=for-the-badge)](https://fivem.net/)
+[![Protection](https://img.shields.io/badge/protection-TEAR--Validation-ef4444?style=for-the-badge)]()
+
+[中文版](README_zh.md) · **English**
+
+</div>
 
 ---
 
-# TEAR-LoadScreen — FiveM Loading Screen
+## 📖 Overview
 
-[![Version](https://img.shields.io/badge/version-2.1.6-blue.svg)](fxmanifest.lua)
-[![License](https://img.shields.io/badge/license-GPL--3.0-green.svg)](LICENSE)
-[![Game](https://img.shields.io/badge/game-FiveM-orange.svg)](https://fivem.net/)
-[![Protection](https://img.shields.io/badge/protection-TEAR--Validation-red.svg)]()
+TEAR-LoadScreen is a fully-featured FiveM loading screen resource with video backgrounds, image carousels, fullscreen lightbox, background music, and a complete dual-sided validation protection system — ready to use out of the box and highly configurable.
 
-> FiveM loadscreen with image carousel, video background support, and comprehensive validation protection system.
+---
 
 ## ⚠️ Protected Resource
 
-**TEAR-LoadScreen is a protected resource.**
+> **This resource is protected by TEAR-Validation. The following fields must NOT be modified, or the resource will be automatically disabled.**
 
-- Resource name: `TEAR-LoadScreen` (CANNOT be renamed)
-- Author: `TEAR` (CANNOT be modified)
-- Validation: Enabled (server-side + client-side)
-- Anti-tamper: Active
+| Field | Value | Note |
+|-------|-------|------|
+| Resource Name | `TEAR-LoadScreen` | Cannot be renamed |
+| Author | `TEARLESSVVOID` | Cannot be modified |
+| Validation | Server-side + Client-side | Enabled |
+| Anti-tamper | Active | — |
 
-Modifying any of the above will result in the resource being blocked.
+---
 
 ## ✨ Features
 
-### Core Features
-- 🎬 **Video Background**: Support for MP4, WebM, OGG video playback
-- 🖼️ **Image Carousel**: Up to 80 images with mixed format support
-- 🔍 **Fullscreen Lightbox**: Click to view images in fullscreen mode
-- 🎵 **Multi-Source Audio**: Video audio, local files, or external URLs
-- 🎛️ **Volume Control**: Configurable default volume with real-time adjustment
-- 📊 **Loading Progress**: Progress bar synced with FiveM `loadProgress`
-- 💬 **Custom Tips**: Rotating tips with bilingual support
-- 🏷️ **Server Logo**: Toggle-able server logo display
+<table>
+<tr>
+<td width="50%">
 
-### Interaction Methods
-- ⌨️ **← / →** keys: Previous / Next image
-- 👆 **Left/Right buttons**: Navigate slides
-- ⚫ **Bottom dots**: Jump to specific slide
-- 📱 **Touch swipe**: Mobile-friendly navigation
-- 🔇 **Mini player**: Play/pause and volume control
+**🎬 Media Support**
+- Video background (MP4 / WebM / OGG)
+- Image carousel (up to 80 images)
+- Fullscreen lightbox viewer
+- Mixed format support
+
+</td>
+<td width="50%">
+
+**🎵 Audio System**
+- Video built-in audio track
+- Local BGM file playback
+- External audio URL streaming
+- Real-time volume control
+
+</td>
+</tr>
+<tr>
+<td>
+
+**📊 Loading System**
+- Native FiveM progress bar sync
+- Custom rotating tip messages
+- Bilingual tip support (CN/EN)
+- Server logo display
+
+</td>
+<td>
+
+**🖱️ Interaction**
+- `← / →` keyboard navigation
+- Left/Right button controls
+- Bottom dot indicators
+- Touch swipe (mobile-friendly)
+- Mini player controls
+
+</td>
+</tr>
+</table>
+
+---
 
 ## 📦 Installation
 
-1. Download `TEAR-LoadScreen` and place the folder in your `resources` directory
-2. Add to `server.cfg`:
-   ```cfg
-   loadscreen 'TEAR-LoadScreen'
-   ```
-   Or for subfolder:
-   ```cfg
-   loadscreen 'your_folder/TEAR-LoadScreen'
-   ```
-3. Configure `config.js` as needed
-4. Add your media files to the appropriate folders
+**Step 1** — Place the `TEAR-LoadScreen` folder into your server's `resources` directory
 
-## 🎬 Video Configuration
+**Step 2** — Register the loading screen in `server.cfg`:
 
-Edit `config.js`:
+```cfg
+# Root directory
+loadscreen 'TEAR-LoadScreen'
 
-```javascript
-window.LOADSCREEN_USE_VIDEO = true;
-window.LOADSCREEN_VIDEO_URL = 'videos/intro.mp4';
-window.LOADSCREEN_VIDEO_MUTED = false;
-window.LOADSCREEN_VIDEO_LOOP = true;
+# Or from a subfolder
+loadscreen 'your_folder/TEAR-LoadScreen'
 ```
 
-**Supported formats:** `.mp4`, `.webm`, `.ogg`
-**Location:** `videos/` folder
+**Step 3** — Edit `config.js` to customize your setup
 
-## 🖼️ Image Configuration
+**Step 4** — Add your media files to the appropriate directories (`images/`, `videos/`, `audio/`)
 
-### Method 1: Auto Numbering
-Name images as `1.jpg`, `2.jpg`, `3.jpg`... up to 80 images.
+---
 
-### Method 2: Config Specification
-```javascript
-window.LOADSCREEN_IMAGE_NAMES = ['image1', 'image2', 'image3'];
-```
+## ⚙️ Configuration
 
-### Method 3: list.txt
-Create `list.txt` in `images/` with one image path per line.
-
-**Supported formats:** `.jpg`, `.jpeg`, `.png`, `.webp`, `.gif`, `.bmp`
-**Location:** `images/` folder
-
-## 🎵 Audio Configuration
+### 🎬 Video Background
 
 ```javascript
-window.LOADSCREEN_BGM_SOURCE = 1;  // 1=Video, 2=Local file, 3=External URL
-
-// For local file:
-window.LOADSCREEN_BGM_LOCAL_URL = 'audio/bgm.mp3';
-
-// For external URL:
-window.LOADSCREEN_BGM_URL = 'https://example.com/music.mp3';
-
-window.LOADSCREEN_DEFAULT_VOLUME = 80;  // 0-100
+window.LOADSCREEN_USE_VIDEO   = true;               // Enable video mode
+window.LOADSCREEN_VIDEO_URL   = 'videos/intro.mp4'; // Path to video file
+window.LOADSCREEN_VIDEO_MUTED = false;              // Mute video audio
+window.LOADSCREEN_VIDEO_LOOP  = true;               // Loop video
 ```
 
-**Supported formats:** `.mp3`, `.wav`, `.ogg`
-**Location:** `audio/` folder
+> **Supported formats:** `.mp4` `.webm` `.ogg` — Place files in the `videos/` directory
 
-## 🏷️ Logo Configuration
+---
+
+### 🖼️ Image Carousel
+
+Three methods are available — pick whichever suits you:
+
+**Method 1: Auto Numbering** (simplest)
+
+Name your images `1.jpg`, `2.jpg`, `3.jpg`... up to **80** images.
+
+**Method 2: Config List**
+
+```javascript
+window.LOADSCREEN_IMAGE_NAMES = ['banner1', 'banner2', 'city'];
+```
+
+**Method 3: List File**
+
+Create a `list.txt` file inside `images/`, one path per line:
+
+```
+images/banner1.jpg
+images/city.png
+images/night.webp
+```
+
+> **Supported formats:** `.jpg` `.jpeg` `.png` `.webp` `.gif` `.bmp` — Place files in the `images/` directory
+
+---
+
+### 🎵 Audio Configuration
+
+```javascript
+window.LOADSCREEN_BGM_SOURCE    = 1;                            // 1=Video track  2=Local file  3=External URL
+window.LOADSCREEN_BGM_LOCAL_URL = 'audio/bgm.mp3';              // Local audio path
+window.LOADSCREEN_BGM_URL       = 'https://example.com/bgm.mp3'; // External audio URL
+window.LOADSCREEN_DEFAULT_VOLUME = 80;                          // Default volume (0-100)
+```
+
+> **Supported formats:** `.mp3` `.wav` `.ogg` — Place files in the `audio/` directory
+
+---
+
+### 🏷️ Server Logo
 
 ```javascript
 window.LOADSCREEN_LOGO_ENABLED = true;
-window.LOADSCREEN_LOGO_URL = 'images/logo.png';
+window.LOADSCREEN_LOGO_URL     = 'images/logo.png';
 ```
 
-## 💬 Custom Tips
+---
+
+### 💬 Custom Tips
 
 ```javascript
 window.LOADSCREEN_TIPS = [
     'Connecting to server...',
-    'Loading resources...',
-    ['Welcome', '欢迎'],  // Bilingual format
-    'Your custom tips...'
+    'Loading resources, please wait...',
+    ['Welcome to our server', '欢迎来到服务器'],  // Bilingual format [EN, CN]
+    'Your custom tip message here'
 ];
 ```
+
+---
+
+### 🔧 Advanced Parameters
+
+Adjust the following constants at the top of `script.js`:
+
+| Parameter | Description | Default |
+|-----------|-------------|:-------:|
+| `AUTO_INTERVAL` | Auto-slide interval (ms) | `5500` |
+| `TIP_ROTATE_INTERVAL` | Tip rotation interval (ms) | `3000` |
+
+**Hide the default loading spinner** — add to `server.cfg`:
+
+```cfg
+setr sv_showBusySpinnerOnLoadingScreen false
+```
+
+---
 
 ## 📂 File Structure
 
 ```
 TEAR-LoadScreen/
-├── fxmanifest.lua
-├── index.html
-├── style.css
-├── config.js
-├── script.js
-├── cl_validation.lua
-├── cl_validation.js
-├── sv_validation.lua
-├── images/
+├── 📄 fxmanifest.lua       — FiveM resource manifest
+├── 📄 index.html           — Main HTML page
+├── 🎨 style.css            — Stylesheet
+├── ⚙️  config.js            — User configuration (edit this)
+├── 📜 script.js            — Core logic
+├── 🔐 cl_validation.lua    — Client-side validation (Lua)
+├── 🔐 cl_validation.js     — Client-side validation (JS)
+├── 🔐 sv_validation.lua    — Server-side validation
+├── 🖼️  images/              — Image directory
 │   ├── logo.png
 │   ├── 1.jpg
 │   └── ...
-├── videos/
+├── 🎬 videos/              — Video directory
 │   └── intro.mp4
-├── audio/
+├── 🎵 audio/               — Audio directory
 │   └── bgm.mp3
-├── LICENSE
-├── README.md
-└── README_zh.md
+├── 📄 LICENSE
+├── 📄 README.md
+└── 📄 README_zh.md
 ```
-
-## ⚙️ Advanced Configuration
-
-In `script.js`:
-
-| Config | Description | Default |
-|--------|-------------|---------|
-| `AUTO_INTERVAL` | Auto-slide interval (ms) | 5500 |
-| `TIP_ROTATE_INTERVAL` | Tip rotation interval (ms) | 3000 |
-
-### Hide Default Spinner
-
-In `server.cfg`:
-```cfg
-setr sv_showBusySpinnerOnLoadingScreen false
-```
-
-## 📋 Requirements
-
-- FiveM Client
-- No additional dependencies
-
-## 📄 License
-
-GPL-3.0 License - See [LICENSE](LICENSE) file for details
 
 ---
 
-**Version: 2.1.6** | **Author: TEAR**
+## 📋 Requirements
+
+- FiveM Client (no additional dependencies)
+
+## 📄 License
+
+This project is licensed under **GPL-3.0** — see the [LICENSE](LICENSE) file for details
+
+---
+
+<div align="center">
+
+**Version 2.2.6** · Author **TEARLESSVVOID**
+
+*Keep the resource name `TEAR-LoadScreen` and author info unchanged,  
+or the validation system will automatically disable this resource.*
+
+</div>
