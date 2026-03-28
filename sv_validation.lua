@@ -12,7 +12,7 @@ local VALIDATION = {
     AUTHOR_NAME = "TEARLESSVVOID",
     GITHUB_REPO = "https://api.github.com/repos/dghjfd/TEAR-LoadScreen/releases/latest",
     GITHUB_API = "https://api.github.com/repos/dghjfd/TEAR-LoadScreen",
-    REQUIRED_VERSION = "2.2.4",
+    REQUIRED_VERSION = "2.2.6",
     ENCRYPTION_KEY = nil,
     INITIALIZED = false
 }
@@ -168,7 +168,7 @@ local function fetch_url(url)
     end, "GET", "", {
         ["Content-Type"] = "application/json",
         ["Accept"]       = "application/json",
-        ["User-Agent"]   = "TEAR-LoadScreen-Validator/2.2.4"
+        ["User-Agent"]   = "TEAR-LoadScreen-Validator/2.2.6"
     })
 
     -- 最长等待 8 秒，每帧检查一次
