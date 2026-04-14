@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' https:; img-src 'self' data: https:; media-src 'self' data: https:; connect-src 'self' https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com;">
+    <title>Loading</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="tear-fingerprint">
+    <div id="tear-validation-marker" data-resource="TEAR-LoadScreen" data-author="TEARLESSVVOID" data-version="2.2.8" data-protected="true"></div>
+    <div id="tear-protected-warning" class="tear-protected-warning" aria-hidden="true" style="display: none !important;"></div>
+    <div id="click-ripples" class="click-ripples" aria-hidden="true"></div>
+    <div id="sakura-container" class="sakura-container" aria-hidden="true"></div>
+    <div id="app">
+        <!-- Top-left server logo slot (set LOADSCREEN_LOGO_URL in config.js) -->
+        <div id="server-logo-wrap" class="server-logo-wrap" aria-hidden="true">
+            <img id="server-logo" class="server-logo" src="" alt="Server logo">
+        </div>
+        <!-- Carousel layer -->
+        <div id="slides" class="slides">
+            <video id="slide-video" class="slide-video" playsinline preload="auto" poster="">
+                <source src="" type="video/mp4">
+                Your browser does not support video playback.
+            </video>
+            <div class="slide-video-overlay" aria-hidden="true"></div>
+        </div>
+
+        <!-- Left/right navigation -->
+        <button type="button" id="prev" class="nav-btn nav-prev" aria-label="Previous">‹</button>
+        <button type="button" id="next" class="nav-btn nav-next" aria-label="Next">›</button>
+
+        <!-- Bottom bar: mini player + tips/dots/progress -->
+        <div class="bottom-bar">
+            <div class="bottom-bar-left">
+                <div class="mini-player">
+                    <audio id="bgm" loop preload="auto" autoplay></audio>
+                    <button type="button" id="player-play" class="player-btn" aria-label="Play/Pause" title="Play/Pause">
+                        <span class="player-icon-play"></span>
+                        <span class="player-icon-pause"></span>
+                    </button>
+                    <div class="player-volume">
+                        <span class="player-volume-icon" aria-hidden="true"></span>
+                        <input type="range" id="player-volume" class="player-volume-range" min="0" max="100" value="80" aria-label="Volume">
+                    </div>
+                </div>
+            </div>
+            <div class="bottom-bar-center">
+                <div id="dots" class="dots"></div>
+                <p id="tip" class="tip">Loading...</p>
+                <div class="progress-wrap">
+                    <div id="progress-fill" class="progress-fill"></div>
+                    <span id="progress-text" class="progress-text">0%</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="view-bar">
+            <div id="view-btns" class="view-bar-views" role="group" aria-label="View mode">
+                <button type="button" class="view-btn view-btn-active" data-view="carousel" aria-label="Carousel" title="Carousel">⊟</button>
+                <button type="button" class="view-btn" data-view="grid" aria-label="Grid" title="Grid">▦</button>
+            </div>
+        </div>
+        <!-- Grid thumbnail area (shown in grid mode) -->
+        <div id="grid-wrap" class="grid-wrap" aria-hidden="true">
+            <div id="grid-inner" class="grid-inner"></div>
+        </div>
+        <!-- Lightbox -->
+        <div id="lightbox" class="lightbox" role="dialog" aria-label="Image viewer" aria-hidden="true">
+            <div class="lightbox-backdrop" id="lightbox-backdrop" aria-hidden="true"></div>
+            <button type="button" id="lightbox-close" class="lightbox-close" aria-label="Close">×</button>
+            <button type="button" id="lightbox-prev" class="lightbox-nav lightbox-prev" aria-label="Previous">‹</button>
+            <img id="lightbox-img" class="lightbox-img" src="" alt="">
+            <button type="button" id="lightbox-next" class="lightbox-nav lightbox-next" aria-label="Next">›</button>
+            <div id="lightbox-counter" class="lightbox-counter"></div>
+        </div>
+    </div>
+    <script src="config.js"></script>
+    <script src="cl_validation.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

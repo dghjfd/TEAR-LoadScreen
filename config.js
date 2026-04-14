@@ -1,0 +1,72 @@
+/**
+ * Loadscreen Configuration
+ */
+
+/** Whether to use video as the first slide: true=use video, false=use image */
+window.LOADSCREEN_USE_VIDEO = true;
+
+/** Video file path (only effective when LOADSCREEN_USE_VIDEO = true): supports mp4, webm, ogg, etc. */
+window.LOADSCREEN_VIDEO_URL = 'videos/intro.mp4';
+
+/** Whether to play video muted: true=muted, false=with sound (Note: browser may require user interaction to play videos with sound) */
+window.LOADSCREEN_VIDEO_MUTED = true;
+
+/** Whether to loop video: true=loop, false=play once */
+window.LOADSCREEN_VIDEO_LOOP = true;
+
+/** Whether to show server custom logo: true=show, false=hide (quick toggle) */
+window.LOADSCREEN_LOGO_ENABLED = false;
+
+/** Server logo in top-left corner: fill in image path (e.g., images/logo.png), leave empty to hide (only effective when LOADSCREEN_LOGO_ENABLED = true) */
+window.LOADSCREEN_LOGO_URL = 'images/logo.png';
+
+/** Optional: Image list method (If not set, automatically try list.txt → this config → 1~80)
+ * Method 1: Place list.txt in images/, one path per line, e.g., images/logo.png or logo.png
+ * Method 2: Set the array below to "no suffix" filenames, auto-detects png/jpg/jpeg/webp/gif/bmp, e.g., ['logo','bg','intro']
+ */
+// window.LOADSCREEN_IMAGE_LIST_URL = 'images/list.txt';
+// window.LOADSCREEN_IMAGE_NAMES = ['logo', 'bg', 'intro'];
+
+/** Whether to enable background music: true=enable, false=disable (quick toggle) */
+window.LOADSCREEN_BGM_ENABLED = false;
+
+/** Background music source type:
+ * 1 - Use video audio (only effective when video is enabled)
+ * 2 - Use local audio file
+ * 3 - Use external URL
+ */
+window.LOADSCREEN_BGM_SOURCE = 1;
+
+/** Local audio file path (only effective when LOADSCREEN_BGM_SOURCE = 2): supports mp3, wav, ogg, etc. */
+window.LOADSCREEN_BGM_LOCAL_URL = 'audio/bgm.mp3';
+
+/** External audio URL (only used when LOADSCREEN_BGM_SOURCE = 3) */
+window.LOADSCREEN_BGM_URL = '';
+
+/** Default volume (0-100): sets initial volume */
+window.LOADSCREEN_DEFAULT_VOLUME = 50;
+
+/** Enable sakura click effect: true=on, false=off (default: off) */
+window.LOADSCREEN_SAKURA_ENABLED = false;
+
+/** Bottom tip text (multiple entries supported, rotates every 3 seconds) */
+window.LOADSCREEN_TIPS = [
+    'City of Angels — where order meets opportunity.',
+    'Welcome to Los Angeles, your story starts now.',
+    'Suit up, every block in L.A. needs you.',
+    'In this city that never sleeps, duty never signs off.',
+    'From Downtown to the coastline, stay professional.',
+    'Respect the role, the rules, and every player.',
+    'Every call is a new chapter.',
+    'When the lights flash, Los Santos is in response mode.',
+    'Your actions shape this city.',
+    'Connecting to Los Angeles network...',
+    'Stay calm, loading will finish soon.',
+    'Follow procedure, teamwork first.',
+    'Hold the line, hold the city.',
+    'This is Los Angeles: fast pace, higher standards.',
+    'Patrol by day, stand watch by night.',
+    'Sea breeze over the port, another task inbound.',
+    'Please wait, entering Los Angeles...',
+    'When ready, the stage is yours.'
+];

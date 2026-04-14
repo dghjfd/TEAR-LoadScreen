@@ -1,0 +1,32 @@
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Log files
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+
+# Media files (uncomment if you don't want to track media)
+# images/*.jpg
+# images/*.jpeg
+# images/*.png
+# images/*.webp
+# images/*.gif
+# images/*.bmp
+# videos/*.mp4
+# videos/*.webm
+# videos/*.ogg
+# audio/*.mp3
+# audio/*.wav
+# audio/*.ogg

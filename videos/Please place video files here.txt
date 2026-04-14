@@ -1,0 +1,18 @@
+Please place your video files in this folder
+
+Supported video formats:
+- .mp4 (recommended)
+- .webm
+- .ogg
+
+Usage Instructions:
+1. Place your video file in this folder (e.g., intro.mp4)
+2. Open config.js for configuration
+3. Set LOADSCREEN_USE_VIDEO to true
+4. Set LOADSCREEN_VIDEO_URL to your video path (e.g., 'videos/intro.mp4')
+5. Adjust other video-related configurations as needed
+
+Note:
+- Keep video file size reasonable to ensure loading speed
+- If video has sound, browser may require user interaction to play audio
+- Recommended to use muted mode (LOADSCREEN_VIDEO_MUTED = true) for best user experience
